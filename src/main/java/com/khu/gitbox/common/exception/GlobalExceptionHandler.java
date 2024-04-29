@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,10 +28,19 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(CustomException.class)
-	protected ResponseEntity<ErrorResponse> handleMemberCustomException(CustomException ex) {
+	protected ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
+		log.warn(">>>>> CustomException : ", ex);
 		return ResponseEntity
 			.status(ex.getErrorCode())
 			.body(new ErrorResponse(ex.getErrorCode().toString(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(BadCredentialsException.class)
+	protected ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
+		log.warn(">>>>> BadCredentialsException : {}", ex.getMessage());
+		return ResponseEntity
+			.status(HttpStatus.UNAUTHORIZED)
+			.body(new ErrorResponse(HttpStatus.UNAUTHORIZED.toString(), "아이디 또는 비밀번호가 일치하지 않습니다."));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
