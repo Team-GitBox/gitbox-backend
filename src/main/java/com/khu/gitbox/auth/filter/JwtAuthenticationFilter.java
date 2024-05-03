@@ -16,6 +16,7 @@ import com.khu.gitbox.auth.provider.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private String parseJwt(HttpServletRequest request) {
+		// Cookie에서 토큰 추출
+		final Cookie[] cookies = request.getCookies();
+
 		String headerAuth = request.getHeader("Authorization");
 
 		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
