@@ -1,4 +1,4 @@
-package com.khu.gitbox.domain.member.dto;
+package com.khu.gitbox.domain.member.presentation.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

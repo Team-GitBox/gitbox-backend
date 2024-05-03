@@ -2,6 +2,8 @@ package com.khu.gitbox.domain.member.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,11 +31,12 @@ public class Member {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "role")
-	private Role role;
-
 	@Column(name = "profile_image")
 	private String profileImage;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "role")
+	private Role role;
 
 	@Builder
 	public Member(String email, String password, String name, String profileImage) {

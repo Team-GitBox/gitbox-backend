@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.member.application.MemberService;
-import com.khu.gitbox.domain.member.dto.SignUpRequest;
+import com.khu.gitbox.domain.member.presentation.dto.SignUpRequest;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

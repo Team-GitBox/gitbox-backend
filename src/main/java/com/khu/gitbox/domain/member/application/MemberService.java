@@ -5,9 +5,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.khu.gitbox.common.exception.CustomException;
-import com.khu.gitbox.domain.member.dto.SignUpRequest;
 import com.khu.gitbox.domain.member.entity.Member;
-import com.khu.gitbox.domain.member.entity.MemberRepository;
+import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
+import com.khu.gitbox.domain.member.presentation.dto.SignUpRequest;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

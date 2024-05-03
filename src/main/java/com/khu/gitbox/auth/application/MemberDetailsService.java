@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.khu.gitbox.domain.member.entity.Member;
-import com.khu.gitbox.domain.member.entity.MemberRepository;
+import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
