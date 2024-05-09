@@ -48,4 +48,12 @@ public class Member {
 		this.profileImage = profileImage;
 		this.role = Role.USER;
 	}
+
+	public void updateMember(String email, String password, String name, String profileImage) {
+		this.email = email;
+		this.password = password;
+		this.name = name;
+		this.profileImage = profileImage;
+		this.role = Role.USER;
+	}
 }

@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 	private static final String[] PUBLIC_URLS = {
-		"/api/v1/**",
+		"/api/register", "/api/login",
 		"/swagger-ui/**",
 		"/swagger-ui",
 		"/swagger-ui.html",

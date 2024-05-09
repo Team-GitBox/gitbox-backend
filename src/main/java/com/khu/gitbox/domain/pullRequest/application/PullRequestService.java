@@ -30,30 +30,33 @@ public class PullRequestService {
 
     public PullRequestDto infoPullRequest(Long fileId) {
 
-        Optional<PullRequest> pullRequest = pullRequestRepository.findByFileId(fileId);
-        Optional<Member> writer = memberRepository.findById(pullRequest.get().getWriterId());
-        Optional<File> file = fileRepository.findById(fileId);
+        PullRequest pullRequest = pullRequestRepository.findByFileId(fileId).orElseThrow(() -> {
+            throw new CustomException(HttpStatus.NOT_FOUND, "pull request is null. check your file again.");
+        });
+        Member writer = memberRepository.findById(pullRequest.getWriterId()).orElseThrow(() -> {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Writer is not in Member database.");
+        });
+        File file = fileRepository.findById(fileId).orElseThrow(() -> {
+            throw new CustomException(HttpStatus.NOT_FOUND, "File is not match in file database.");
+        });
 
-        if(pullRequest.isPresent()) {
-            Optional<List<PullRequestComment>> commentList = pullRequestCommentRepository.findAllByPullRequestId(pullRequest.get().getId());
+        List<PullRequestComment> commentList = pullRequestCommentRepository.findAllByPullRequestId(pullRequest.getId()).get();
 
-            PullRequestDto pullRequestDto = PullRequestDto.builder()
-                    .title(pullRequest.get().getTitle())
-                    .message(pullRequest.get().getMessage())
-                    .writer(writer.get().getEmail())
-                    .fileUrl(file.get().getUrl())
-                    .build();
+        PullRequestDto pullRequestDto = PullRequestDto.builder()
+                .title(pullRequest.getTitle())
+                .message(pullRequest.getMessage())
+                .writer(writer.getEmail())
+                .fileUrl(file.getUrl())
+                .build();
 
-            if(commentList.isPresent()) {
-                pullRequestDto.builder().commentDtoList(commentList.get());
-            }
-
-            return pullRequestDto;
-
+        if(!commentList.isEmpty()) {
+            pullRequestDto.setCommentDtoList(commentList);
         }
 
-        throw new CustomException(HttpStatus.NOT_FOUND, "this file has no pull request now.");
+        return pullRequestDto;
+
     }
+
 
     public void isApprovedPullRequest(PullRequestCommentDto pullRequestCommentDto, Long reviewerId, Long fileId) {
 

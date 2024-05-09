@@ -7,9 +7,9 @@ spring:
     include: secret
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/gitbox?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&createIfNotExist=true
-    username: root
-    password: root1234!
+    url: jdbc:mysql://localhost:3306/cloudComputing?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&createIfNotExist=true
+    username: tgwing
+    password: tgwing
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true

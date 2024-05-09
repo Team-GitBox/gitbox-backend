@@ -10,8 +10,8 @@ import com.khu.gitbox.domain.member.entity.Member;
 import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
 import com.khu.gitbox.domain.member.presentation.dto.SignUpRequest;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Optional;
@@ -58,27 +58,19 @@ public class MemberService {
 
 	@Transactional
 	public Long editMember(MemberDto memberDto, Long id) {
-		Optional<Member> member = memberRepository.findById(id);
+		Member member = memberRepository.findById(id).orElseThrow(()-> {
+			throw new CustomException(HttpStatus.NOT_FOUND, "Member is not exist");
+		});
 
-		System.out.println("member = " + member.get().getId());
-		System.out.println("member = " + member.get().getName());
+		System.out.println("member = " + member.getId());
+		System.out.println("member = " + member.getName());
 
 		System.out.println("memberDto = " + memberDto.getName());
 		System.out.println("id = " + id);
 
-		if(member.isEmpty())
-			throw new CustomException(HttpStatus.NOT_FOUND, "Member is not exist");
+		if(member.getId().equals(id)) {
 
-		if(member.get().getId().equals(id)) {
-
-			member.get().builder()
-					.email(memberDto.getEmail())
-					.name(memberDto.getName())
-					.password(memberDto.getPassword())
-					.profileImage(memberDto.getProfileImage())
-					.build();
-
-			Member save = memberRepository.save(member.get());
+			member.updateMember(memberDto.getEmail(), memberDto.getPassword(), memberDto.getName(), memberDto.getProfileImage());
 		}
 		else {
 			throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "token id is not match the input value.");
@@ -88,14 +80,11 @@ public class MemberService {
 	}
 
 	public void deleteMember(String email) {
-		Optional<Member> member = memberRepository.findByEmail(email);
+		Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
+			throw new CustomException(HttpStatus.NOT_FOUND, "Member is not exist");
+		});
 
-		if(member.isPresent()) {
-			memberRepository.deleteById(member.get().getId());
+		memberRepository.deleteById(member.getId());
 
-			return;
-		}
-
-		throw new CustomException(HttpStatus.NOT_FOUND, "Member is not exist");
 	}
 }

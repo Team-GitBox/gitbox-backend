@@ -15,7 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/members")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class MemberController {
 
@@ -28,21 +28,19 @@ public class MemberController {
 		return ResponseEntity.ok(ApiResponse.created(id));
 	}
 
-	@GetMapping (value = {"/infosearch", "/infoedit"})
-	public ResponseEntity<ApiResponse<MemberDto>> infosearch(@RequestHeader("Cookie") String cookie) {
+	@GetMapping (value = {"/my", "/my/info"})
+	public ResponseEntity<ApiResponse<MemberDto>> myInfo(@RequestHeader("Cookie") String cookie) {
 
 		String email = jwtTokenProvider.getEmail(cookie.substring(12));
-
-		System.out.println("email = " + email);
 
 		MemberDto memberDto = memberService.infoMember(email);
 
 		return ResponseEntity.ok(ApiResponse.ok(memberDto));
 	}
 
-	@Transactional
-	@PutMapping("/infoedit")
+	@PostMapping("/my/info")
 	public ResponseEntity<ApiResponse<Long>> editMember(@RequestBody MemberDto memberDto, @RequestHeader("Cookie") String cookie) {
+
 		System.out.println("memberDto = " + memberDto);
 		Long id = jwtTokenProvider.getId(cookie.substring(12));
 
@@ -53,8 +51,9 @@ public class MemberController {
 		return ResponseEntity.ok(ApiResponse.ok(responseId));
 	}
 
-	@DeleteMapping("/delete")
+	@DeleteMapping("/my/info")
 	public ResponseEntity<ApiResponse<String>> deleteMember(@RequestHeader("Cookie") String cookie) {
+
 		String email = jwtTokenProvider.getEmail(cookie.substring(12));
 
 		memberService.deleteMember(email);

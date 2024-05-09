@@ -1,4 +1,4 @@
-package com.khu.gitbox.domain.workspace.entity;
+package com.khu.gitbox.domain.pullRequest.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

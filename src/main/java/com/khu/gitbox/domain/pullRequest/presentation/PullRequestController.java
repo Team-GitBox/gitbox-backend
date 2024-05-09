@@ -11,20 +11,20 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/pr")
+@RequestMapping("/api/{fileId}")
 public class PullRequestController {
 
     private final PullRequestService pullRequestService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @GetMapping("/{fileId}")
+    @GetMapping("/pr")
     public ResponseEntity<ApiResponse<PullRequestDto>> infoPullRequest(@PathVariable Long fileId) {
         PullRequestDto pullRequestDto = pullRequestService.infoPullRequest(fileId);
 
         return ResponseEntity.ok(ApiResponse.ok(pullRequestDto));
     }
 
-    @PostMapping("/{fileId}")
+    @PostMapping("/pr")
     public ResponseEntity<ApiResponse<Boolean>> checkPullRequestComment(
             @RequestHeader("Cookie") String cookie,
             @RequestBody PullRequestCommentDto pullRequestCommentDto,
@@ -36,5 +36,8 @@ public class PullRequestController {
 
         return ResponseEntity.ok(ApiResponse.created(pullRequestCommentDto.getIsApproved()));
     }
+
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<>>
 
 }
