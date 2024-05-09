@@ -16,6 +16,19 @@ spring:
     hibernate:
       ddl-auto: create
 
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET}
+      folder: files/
+    stack:
+      auto: false
+    region:
+      static: ${AWS_REGION}
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+
 logging:
   level:
     org.hibernate.SQL: TRACE
