@@ -11,10 +11,12 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Table(name = "member")
 @Entity
 @Getter
+@DynamicUpdate
 @NoArgsConstructor
 public class Member {
 

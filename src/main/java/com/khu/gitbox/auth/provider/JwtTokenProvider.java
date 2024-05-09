@@ -36,7 +36,7 @@ public class JwtTokenProvider {
 	private int expirySeconds;
 
 	public String createAccessToken(Authentication authentication) {
-		final UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
+		final UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
 		final Instant now = Instant.now();
 		final Instant expirationTime = now.plusSeconds(expirySeconds);
@@ -44,30 +44,30 @@ public class JwtTokenProvider {
 		final String authority = userDetails.getAuthority();
 
 		return Jwts.builder()
-			.claim("id", userDetails.getId())
-			.subject((userDetails.getUsername()))
-			.claim(AUTHORITIES_CLAIM_NAME, authority)
-			.issuedAt(Date.from(now))
-			.expiration(Date.from(expirationTime))
-			.signWith(key())
-			.compact();
+				.claim("id", userDetails.getId())
+				.subject((userDetails.getUsername()))
+				.claim(AUTHORITIES_CLAIM_NAME, authority)
+				.issuedAt(Date.from(now))
+				.expiration(Date.from(expirationTime))
+				.signWith(key())
+				.compact();
 	}
 
 	public Authentication getAuthentication(String accessToken) {
 		Claims claims = Jwts.parser()
-			.verifyWith(key())
-			.build()
-			.parseSignedClaims(accessToken)
-			.getPayload();
+				.verifyWith(key())
+				.build()
+				.parseSignedClaims(accessToken)
+				.getPayload();
 
 		Collection<? extends GrantedAuthority> authorities = List.of(
-			new SimpleGrantedAuthority(claims.get(AUTHORITIES_CLAIM_NAME).toString()));
+				new SimpleGrantedAuthority(claims.get(AUTHORITIES_CLAIM_NAME).toString()));
 
 		UserDetails principal = new UserDetailsImpl(
-			claims.get("id", Long.class),
-			claims.getSubject(),
-			null,
-			authorities
+				claims.get("id", Long.class),
+				claims.getSubject(),
+				null,
+				authorities
 		);
 		return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
 	}
@@ -83,4 +83,25 @@ public class JwtTokenProvider {
 	private SecretKey key() {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
 	}
+
+	public String getEmail(String token) {
+		Claims claims = Jwts.parser()
+				.setSigningKey(key()).build()
+				.parseClaimsJws(token)
+				.getBody();
+
+		return claims.getSubject();
+	}
+
+	public Long getId(String token) {
+		Claims claims = Jwts.parser()
+				.setSigningKey(key()).build()
+				.parseClaimsJws(token)
+				.getPayload();
+
+
+
+		return claims.get("id", Long.class);
+	}
 }
+
