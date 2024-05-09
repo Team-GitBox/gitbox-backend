@@ -2,6 +2,7 @@ package com.khu.gitbox.domain.file.presentation;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.file.application.FolderService;
 import com.khu.gitbox.domain.file.presentation.dto.FolderCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.FolderGetResponse;
+import com.khu.gitbox.domain.file.presentation.dto.FolderUpdateRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +37,15 @@ public class FolderController {
 		@PathVariable Long workspaceId,
 		@PathVariable Long folderId) {
 		FolderGetResponse folder = folderService.getFolder(workspaceId, folderId);
+		return ResponseEntity.ok(ApiResponse.ok(folder));
+	}
+
+	@PatchMapping("/{folderId}")
+	public ResponseEntity<ApiResponse<FolderGetResponse>> updateFolder(
+		@PathVariable Long workspaceId,
+		@PathVariable Long folderId,
+		@RequestBody FolderUpdateRequest request) {
+		FolderGetResponse folder = folderService.updateFolder(workspaceId, folderId, request);
 		return ResponseEntity.ok(ApiResponse.ok(folder));
 	}
 }

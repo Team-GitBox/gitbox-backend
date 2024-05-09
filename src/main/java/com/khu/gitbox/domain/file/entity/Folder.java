@@ -35,4 +35,9 @@ public class Folder {
 		this.parentFolderId = parentFolderId;
 		this.workspaceId = workspaceId;
 	}
+
+	public void updateFolder(String name, Long parentFolderId) {
+		this.name = name;
+		this.parentFolderId = parentFolderId != null ? parentFolderId : this.parentFolderId;
+	}
 }
