@@ -62,6 +62,12 @@ public class FolderService {
 		);
 	}
 
+	public void deleteFolder(Long workspaceId, Long folderId) {
+		final Folder folder = getFolderEntity(workspaceId, folderId);
+		fileRepository.deleteByFolderId(folderId);
+		folderRepository.delete(folder);
+	}
+
 	private void validateWorkspace(Long workspaceId) {
 		workspaceRepository.findById(workspaceId)
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."));
@@ -71,4 +77,5 @@ public class FolderService {
 		return folderRepository.findByIdAndWorkspaceId(folderId, workspaceId)
 			.orElseThrow(() -> new IllegalArgumentException("폴더를 찾을 수 없습니다."));
 	}
+
 }

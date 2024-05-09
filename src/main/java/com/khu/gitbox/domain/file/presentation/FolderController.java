@@ -1,6 +1,7 @@
 package com.khu.gitbox.domain.file.presentation;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,5 +48,13 @@ public class FolderController {
 		@RequestBody FolderUpdateRequest request) {
 		FolderGetResponse folder = folderService.updateFolder(workspaceId, folderId, request);
 		return ResponseEntity.ok(ApiResponse.ok(folder));
+	}
+
+	@DeleteMapping("/{folderId}")
+	public ResponseEntity<ApiResponse<Void>> deleteFolder(
+		@PathVariable Long workspaceId,
+		@PathVariable Long folderId) {
+		folderService.deleteFolder(workspaceId, folderId);
+		return ResponseEntity.ok(ApiResponse.ok(null));
 	}
 }

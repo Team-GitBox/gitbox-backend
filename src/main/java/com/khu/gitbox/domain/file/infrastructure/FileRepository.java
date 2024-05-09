@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.khu.gitbox.domain.file.entity.File;
 
 public interface FileRepository extends JpaRepository<File, Long> {
+	void deleteByFolderId(Long folderId);
 }
