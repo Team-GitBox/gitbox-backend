@@ -27,6 +27,9 @@ public class ActionHistory {
 	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
+	@Column(name = "file_id", nullable = false)
+	private Long fileId;
+
 	@Column(name = "workspace_id", nullable = false)
 	private Long workspaceId;
 

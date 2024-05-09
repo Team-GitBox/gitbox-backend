@@ -5,14 +5,18 @@ import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
 import com.khu.gitbox.domain.member.entity.Member;
 import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
+import com.khu.gitbox.domain.pullRequest.entity.ActionHistory;
 import com.khu.gitbox.domain.pullRequest.entity.PullRequest;
 import com.khu.gitbox.domain.pullRequest.entity.PullRequestComment;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestCommentRepository;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestRepository;
 import com.khu.gitbox.domain.pullRequest.presentation.PullRequestController;
+import com.khu.gitbox.domain.pullRequest.presentation.dto.ActionHistoryDto;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestCommentDto;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -94,5 +98,11 @@ public class PullRequestService {
 
             fileRepository.save(file.get());
         }
+    }
+
+    public Page<ActionHistoryDto> getActionHistoryList(int page, Pageable pageable) {
+
+
+        return
     }
 }
