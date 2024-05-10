@@ -51,10 +51,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		// Cookie에서 토큰 추출
 		final Cookie[] cookies = request.getCookies();
 
-		String headerAuth = request.getHeader("Authorization");
+		String headerAuth = request.getHeader("Cookie");
 
-		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-			return headerAuth.substring(7);
+		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("accessToken=")) {
+			return headerAuth.substring(12);
 		}
 
 		throw new AuthenticationCredentialsNotFoundException("토큰이 존재하지 않습니다.");

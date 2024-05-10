@@ -83,4 +83,15 @@ public class JwtTokenProvider {
 	private SecretKey key() {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
 	}
+
+	public Long getId(String token) {
+		Long id = Jwts.parser()
+				.setSigningKey(key()).build()
+				.parseClaimsJws(token)
+				.getBody()
+				.get("id", Long.class);
+
+		return id;
+
+	}
 }

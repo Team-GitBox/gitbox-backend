@@ -12,6 +12,8 @@ import com.khu.gitbox.domain.member.presentation.dto.SignUpRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @Transactional
 @Service
 @RequiredArgsConstructor
