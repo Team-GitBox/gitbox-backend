@@ -39,6 +39,9 @@ public class File {
 	@Column(name = "status", nullable = false)
 	private FileStatus status;
 
+	@Column(name = "version", nullable = false)
+	private Long version;
+
 	@Column(name = "is_latest", nullable = false)
 	private boolean isLatest;
 
@@ -64,6 +67,7 @@ public class File {
 		String url,
 		FileType type,
 		FileStatus status,
+		Long version,
 		boolean isLatest,
 		Long writerId,
 		Long workspaceId,
@@ -76,6 +80,7 @@ public class File {
 		this.url = url;
 		this.type = type;
 		this.status = status;
+		this.version = version;
 		this.isLatest = isLatest;
 		this.writerId = writerId;
 		this.workspaceId = workspaceId;

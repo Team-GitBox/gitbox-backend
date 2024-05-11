@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.file.application.FileService;
+import com.khu.gitbox.domain.file.presentation.dto.NewVersionFileUploadRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,8 +32,9 @@ public class FileController {
 	@PostMapping(value = "/files/{parentFileId}", consumes = "multipart/form-data")
 	public ResponseEntity<ApiResponse<Long>> uploadNewVersionFile(
 		@PathVariable Long parentFileId,
+		@RequestPart(value = "request") NewVersionFileUploadRequest request,
 		@RequestPart(value = "file") MultipartFile multipartFile) {
-		final Long newFileId = fileService.uploadNewVersionFile(parentFileId, multipartFile);
+		final Long newFileId = fileService.uploadNewVersionFile(parentFileId, request, multipartFile);
 		return ResponseEntity.ok(ApiResponse.ok(newFileId));
 	}
 }

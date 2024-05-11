@@ -35,6 +35,7 @@ public class FileService {
 			.type(fileType)
 			.status(FileStatus.APPROVED)
 			.url(s3Service.uploadFile(multipartFile))
+			.version(1L)
 			.isLatest(true)
 			.writerId(1L) // TODO: 임시
 			.workspaceId(workspaceId)
@@ -46,7 +47,9 @@ public class FileService {
 	}
 
 	// 새로운 버전 파일 업로드 (+ PR 생성)
-	public Long uploadNewVersionFile(Long parentFileId, NewVersionFileUploadRequest request,
+	public Long uploadNewVersionFile(
+		Long parentFileId,
+		NewVersionFileUploadRequest request,
 		MultipartFile multipartFile) {
 		// 부모 파일 정보 가져오기
 		final File parentFile = getFile(parentFileId);
@@ -72,6 +75,7 @@ public class FileService {
 			.type(fileType)
 			.status(FileStatus.PENDING)
 			.url(s3Service.uploadFile(multipartFile))
+			.version(parentFile.getVersion() + 1)
 			.isLatest(false) // PR 승인 시 true로 변경되어야 함
 			.writerId(1L)
 			.workspaceId(parentFile.getWorkspaceId())
