@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,4 +28,16 @@ public class Folder {
 
 	@Column(name = "workspace_id", nullable = false)
 	private Long workspaceId;
+
+	@Builder
+	Folder(String name, Long parentFolderId, Long workspaceId) {
+		this.name = name;
+		this.parentFolderId = parentFolderId;
+		this.workspaceId = workspaceId;
+	}
+
+	public void updateFolder(String name, Long parentFolderId) {
+		this.name = name;
+		this.parentFolderId = parentFolderId != null ? parentFolderId : this.parentFolderId;
+	}
 }
