@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -51,4 +52,20 @@ public class File {
 
 	@Column(name = "root_file_id", nullable = false)
 	private Long rootFileId;
+
+
+	@Builder
+	public File(String name, String type, Long size, String url, boolean isLatest, boolean isApproved, Long writerId, Long workspaceId, Long folderId, Long parentFileId, Long rootFileId) {
+		this.name = name;
+		this.type = type;
+		this.size = size;
+		this.url = url;
+		this.isLatest = isLatest;
+		this.isApproved = isApproved;
+		this.writerId = writerId;
+		this.workspaceId = workspaceId;
+		this.folderId = folderId;
+		this.parentFileId = parentFileId;
+		this.rootFileId = rootFileId;
+	}
 }
