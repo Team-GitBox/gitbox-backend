@@ -1,5 +1,9 @@
 package com.khu.gitbox.domain.file.entity;
 
+import org.springframework.http.HttpStatus;
+
+import com.khu.gitbox.common.exception.CustomException;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -98,6 +102,9 @@ public class File {
 	}
 
 	public void delete() {
+		if (this.status == FileStatus.DELETED) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "이미 삭제된 파일입니다.");
+		}
 		this.status = FileStatus.DELETED;
 	}
 }
