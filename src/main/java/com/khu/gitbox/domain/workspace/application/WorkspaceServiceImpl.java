@@ -99,7 +99,7 @@ public class WorkspaceServiceImpl implements WorkspaceService{
 			workspaceMemberRepository.deleteById(memberId);
 		}
 	}
-
+	//
 	@Override
 	public WorkspaceDetail findByMemberIdAndWorkspaceId(Long workspaceId, Long memberId) {
 		// 워크스페이스 멤버 확인

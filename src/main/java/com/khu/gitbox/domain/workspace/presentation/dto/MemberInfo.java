@@ -11,7 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberInfo {
-
     private String memberEmail;
     private String memberName;
 }
