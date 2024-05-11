@@ -54,7 +54,7 @@ public class File {
 	@Column(name = "parent_file_id")
 	private Long parentFileId;
 
-	@Column(name = "root_file_id", nullable = false)
+	@Column(name = "root_file_id")
 	private Long rootFileId;
 
 	@Builder

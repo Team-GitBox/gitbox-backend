@@ -20,11 +20,19 @@ public class FileController {
 	private final FileService fileService;
 
 	@PostMapping(value = "/workspace/{workspaceId}/folders/{folderId}/files", consumes = "multipart/form-data")
-	public ResponseEntity<ApiResponse> uploadFile(
+	public ResponseEntity<ApiResponse<Long>> uploadFile(
 		@PathVariable Long workspaceId,
 		@PathVariable Long folderId,
 		@RequestPart(value = "file") MultipartFile multipartFile) {
-		fileService.uploadFile(workspaceId, folderId, multipartFile);
-		return ResponseEntity.ok(ApiResponse.ok(null));
+		final Long fileId = fileService.uploadFile(workspaceId, folderId, multipartFile);
+		return ResponseEntity.ok(ApiResponse.ok(fileId));
+	}
+
+	@PostMapping(value = "/files/{parentFileId}", consumes = "multipart/form-data")
+	public ResponseEntity<ApiResponse<Long>> uploadNewVersionFile(
+		@PathVariable Long parentFileId,
+		@RequestPart(value = "file") MultipartFile multipartFile) {
+		final Long newFileId = fileService.uploadNewVersionFile(parentFileId, multipartFile);
+		return ResponseEntity.ok(ApiResponse.ok(newFileId));
 	}
 }
