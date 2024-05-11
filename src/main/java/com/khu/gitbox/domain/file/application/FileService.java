@@ -12,7 +12,8 @@ import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
-import com.khu.gitbox.domain.file.presentation.dto.FileGetResponse;
+import com.khu.gitbox.domain.file.presentation.dto.request.FileUpdateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
 import com.khu.gitbox.s3.S3Service;
 
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,8 @@ public class FileService {
 			.rootFileId(null)
 			.parentFileId(null)
 			.build();
+
+		// TODO: 워크스페이스 용량 업데이트
 
 		final File savedFile = fileRepository.save(file);
 		savedFile.updateRootFileId(savedFile.getId());
@@ -107,9 +110,24 @@ public class FileService {
 			.map(FileGetResponse::of).toList();
 	}
 
-	// 파일 이동
+	// 파일 업데이트 (이름 수정)
+	public void updateFile(Long fileId, FileUpdateRequest request) {
+		final File file = getFileEntity(fileId);
+		file.updateFileName(request.name());
+	}
 
 	// 파일 삭제
+	public void deleteFile(Long fileId) {
+		final File file = getFileEntity(fileId);
+		file.delete();
+	}
+	
+	// 파일 트리 삭제
+	public void deleteFileTree(Long fileId) {
+		final File file = getFileEntity(fileId);
+		fileRepository.findAllByRootFileId(file.getRootFileId())
+			.forEach(File::delete);
+	}
 
 	private File getFileEntity(Long fileId) {
 		return fileRepository.findById(fileId)

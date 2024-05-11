@@ -8,9 +8,9 @@ import com.khu.gitbox.common.exception.CustomException;
 import com.khu.gitbox.domain.file.entity.Folder;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
 import com.khu.gitbox.domain.file.infrastructure.FolderRepository;
-import com.khu.gitbox.domain.file.presentation.dto.FolderCreateRequest;
-import com.khu.gitbox.domain.file.presentation.dto.FolderGetResponse;
-import com.khu.gitbox.domain.file.presentation.dto.FolderUpdateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.request.FolderCreateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.request.FolderUpdateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.response.FolderGetResponse;
 import com.khu.gitbox.domain.workspace.infrastructure.WorkspaceRepository;
 
 import lombok.RequiredArgsConstructor;

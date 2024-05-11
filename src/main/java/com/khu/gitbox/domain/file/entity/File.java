@@ -93,6 +93,10 @@ public class File {
 		this.rootFileId = id;
 	}
 
+	public void updateFileName(String name) {
+		this.name = name;
+	}
+
 	public void delete() {
 		this.status = FileStatus.DELETED;
 	}

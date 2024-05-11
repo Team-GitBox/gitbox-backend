@@ -1,4 +1,4 @@
-package com.khu.gitbox.domain.file.presentation.dto;
+package com.khu.gitbox.domain.file.presentation.dto.response;
 
 import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileStatus;
