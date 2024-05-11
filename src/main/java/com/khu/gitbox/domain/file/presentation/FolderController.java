@@ -16,10 +16,11 @@ import com.khu.gitbox.domain.file.presentation.dto.FolderCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.FolderGetResponse;
 import com.khu.gitbox.domain.file.presentation.dto.FolderUpdateRequest;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/workspace/{workspaceId}/folder")
+@RequestMapping("/api/workspace/{workspaceId}/folders")
 @RequiredArgsConstructor
 public class FolderController {
 
@@ -28,7 +29,7 @@ public class FolderController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<Long>> createFolder(
 		@PathVariable Long workspaceId,
-		@RequestBody FolderCreateRequest request) {
+		@Valid @RequestBody FolderCreateRequest request) {
 		Long folderId = folderService.createFolder(workspaceId, request);
 		return ResponseEntity.ok(ApiResponse.ok(folderId));
 	}
@@ -45,7 +46,7 @@ public class FolderController {
 	public ResponseEntity<ApiResponse<FolderGetResponse>> updateFolder(
 		@PathVariable Long workspaceId,
 		@PathVariable Long folderId,
-		@RequestBody FolderUpdateRequest request) {
+		@Valid @RequestBody FolderUpdateRequest request) {
 		FolderGetResponse folder = folderService.updateFolder(workspaceId, folderId, request);
 		return ResponseEntity.ok(ApiResponse.ok(folder));
 	}

@@ -27,7 +27,7 @@ public class FolderService {
 	public Long createFolder(Long workspaceId, FolderCreateRequest request) {
 		validateWorkspace(workspaceId);
 
-		// TODO: 루트폴더를 워크스페이스 생성시 만들어야할 것 같음
+		// TODO: 루트폴더를 워크스페이스 생성 시 만들어야할 것 같음
 		final Folder newFolder = Folder.builder()
 			.name(request.name())
 			.parentFolderId(request.parentFolderId())
