@@ -63,7 +63,7 @@ public class File {
 
 	@Column(name = "root_file_id")
 	private Long rootFileId;
-
+	
 	@Builder
 	File(
 		String name,

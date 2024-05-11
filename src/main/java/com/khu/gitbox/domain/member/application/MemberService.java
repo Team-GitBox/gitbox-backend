@@ -1,5 +1,6 @@
 package com.khu.gitbox.domain.member.application;
 
+import com.khu.gitbox.domain.member.presentation.dto.MemberDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,10 +10,12 @@ import com.khu.gitbox.domain.member.entity.Member;
 import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
 import com.khu.gitbox.domain.member.presentation.dto.SignUpRequest;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
-@Transactional
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -31,5 +34,57 @@ public class MemberService {
 			.build();
 
 		return memberRepository.save(member).getId();
+	}
+
+	// 회원 정보 조회하기 (1사람)
+	public MemberDto infoMember(String email) {
+		Optional<Member> member = memberRepository.findByEmail(email);
+
+		if(!member.isPresent()) {
+			throw new CustomException(HttpStatus.NOT_FOUND, "Member is not exist.");
+		}
+
+		Member mem = member.get();
+
+		MemberDto memberDto = MemberDto.builder()
+				.email(mem.getEmail())
+				.name(mem.getName())
+				.password(mem.getPassword())
+				.profileImage(mem.getProfileImage())
+				.build();
+
+		return memberDto;
+	}
+
+	@Transactional
+	public Long editMember(MemberDto memberDto, Long id) {
+		Member member = memberRepository.findById(id).orElseThrow(()-> {
+			throw new CustomException(HttpStatus.NOT_FOUND, "Member is not exist");
+		});
+
+		System.out.println("member = " + member.getId());
+		System.out.println("member = " + member.getName());
+
+		System.out.println("memberDto = " + memberDto.getName());
+		System.out.println("id = " + id);
+
+		if(member.getId().equals(id)) {
+
+			member.updateMember(memberDto.getEmail(), memberDto.getPassword(), memberDto.getName(), memberDto.getProfileImage());
+		}
+		else {
+			throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "token id is not match the input value.");
+        }
+
+		return id;
+	}
+
+	public void deleteMember(String email) {
+		Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
+			throw new CustomException(HttpStatus.NOT_FOUND, "Member is not exist");
+		});
+
+		memberRepository.deleteById(member.getId());
+
 	}
 }
