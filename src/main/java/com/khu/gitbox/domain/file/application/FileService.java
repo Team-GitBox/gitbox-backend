@@ -13,7 +13,6 @@ import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
 import com.khu.gitbox.domain.file.presentation.dto.FileGetResponse;
-import com.khu.gitbox.domain.file.presentation.dto.NewVersionFileUploadRequest;
 import com.khu.gitbox.s3.S3Service;
 
 import lombok.RequiredArgsConstructor;
@@ -55,7 +54,6 @@ public class FileService {
 	// 새로운 버전 파일 업로드 (+ PR 생성)
 	public Long uploadNewVersionFile(
 		Long parentFileId,
-		NewVersionFileUploadRequest request,
 		MultipartFile multipartFile) {
 		// 부모 파일 정보 가져오기
 		final File parentFile = getFileEntity(parentFileId);
