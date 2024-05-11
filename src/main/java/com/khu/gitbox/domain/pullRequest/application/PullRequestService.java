@@ -9,15 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.khu.gitbox.common.exception.CustomException;
+import com.khu.gitbox.domain.action.entity.ActionHistory;
+import com.khu.gitbox.domain.action.infrastructure.ActionHistoryRepository;
 import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
 import com.khu.gitbox.domain.member.entity.Member;
 import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
-import com.khu.gitbox.domain.pullRequest.entity.ActionHistory;
 import com.khu.gitbox.domain.pullRequest.entity.PullRequest;
 import com.khu.gitbox.domain.pullRequest.entity.PullRequestComment;
-import com.khu.gitbox.domain.pullRequest.infrastructure.ActionHistoryRepository;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestCommentRepository;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestRepository;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.ActionHistoryDto;

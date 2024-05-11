@@ -1,22 +1,24 @@
 package com.khu.gitbox.domain.member.application;
 
-import com.khu.gitbox.domain.member.presentation.dto.MemberDto;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.khu.gitbox.common.exception.CustomException;
 import com.khu.gitbox.domain.member.entity.Member;
 import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
+import com.khu.gitbox.domain.member.presentation.dto.MemberDto;
 import com.khu.gitbox.domain.member.presentation.dto.SignUpRequest;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Optional;
-
+@Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberService {
 	private final MemberRepository memberRepository;
@@ -40,41 +42,33 @@ public class MemberService {
 	public MemberDto infoMember(String email) {
 		Optional<Member> member = memberRepository.findByEmail(email);
 
-		if(!member.isPresent()) {
+		if (!member.isPresent()) {
 			throw new CustomException(HttpStatus.NOT_FOUND, "Member is not exist.");
 		}
 
 		Member mem = member.get();
 
 		MemberDto memberDto = MemberDto.builder()
-				.email(mem.getEmail())
-				.name(mem.getName())
-				.password(mem.getPassword())
-				.profileImage(mem.getProfileImage())
-				.build();
+			.email(mem.getEmail())
+			.name(mem.getName())
+			.password(mem.getPassword())
+			.profileImage(mem.getProfileImage())
+			.build();
 
 		return memberDto;
 	}
 
-	@Transactional
 	public Long editMember(MemberDto memberDto, Long id) {
-		Member member = memberRepository.findById(id).orElseThrow(()-> {
+		Member member = memberRepository.findById(id).orElseThrow(() -> {
 			throw new CustomException(HttpStatus.NOT_FOUND, "Member is not exist");
 		});
 
-		System.out.println("member = " + member.getId());
-		System.out.println("member = " + member.getName());
-
-		System.out.println("memberDto = " + memberDto.getName());
-		System.out.println("id = " + id);
-
-		if(member.getId().equals(id)) {
-
-			member.updateMember(memberDto.getEmail(), memberDto.getPassword(), memberDto.getName(), memberDto.getProfileImage());
-		}
-		else {
+		if (member.getId().equals(id)) {
+			member.updateMember(memberDto.getEmail(), memberDto.getPassword(), memberDto.getName(),
+				memberDto.getProfileImage());
+		} else {
 			throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "token id is not match the input value.");
-        }
+		}
 
 		return id;
 	}
