@@ -1,6 +1,9 @@
 package com.khu.gitbox.domain.file.presentation;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.file.application.FileService;
+import com.khu.gitbox.domain.file.presentation.dto.FileGetResponse;
 import com.khu.gitbox.domain.file.presentation.dto.NewVersionFileUploadRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -36,5 +40,17 @@ public class FileController {
 		@RequestPart(value = "file") MultipartFile multipartFile) {
 		final Long newFileId = fileService.uploadNewVersionFile(parentFileId, request, multipartFile);
 		return ResponseEntity.ok(ApiResponse.ok(newFileId));
+	}
+
+	@GetMapping(value = "/files/{fileId}")
+	public ResponseEntity<ApiResponse<FileGetResponse>> getFile(@PathVariable Long fileId) {
+		final FileGetResponse response = fileService.getFileInfo(fileId);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
+	@GetMapping(value = "/files/{fileId}/tree")
+	public ResponseEntity<ApiResponse<List<FileGetResponse>>> getFileTree(@PathVariable Long fileId) {
+		final List<FileGetResponse> fileTree = fileService.getFileTree(fileId);
+		return ResponseEntity.ok(ApiResponse.ok(fileTree));
 	}
 }

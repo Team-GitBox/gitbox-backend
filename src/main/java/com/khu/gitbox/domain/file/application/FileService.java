@@ -1,5 +1,7 @@
 package com.khu.gitbox.domain.file.application;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
+import com.khu.gitbox.domain.file.presentation.dto.FileGetResponse;
 import com.khu.gitbox.domain.file.presentation.dto.NewVersionFileUploadRequest;
 import com.khu.gitbox.s3.S3Service;
 
@@ -43,7 +46,10 @@ public class FileService {
 			.rootFileId(null)
 			.parentFileId(null)
 			.build();
-		return fileRepository.save(file).getId();
+
+		final File savedFile = fileRepository.save(file);
+		savedFile.updateRootFileId(savedFile.getId());
+		return fileRepository.save(savedFile).getId();
 	}
 
 	// 새로운 버전 파일 업로드 (+ PR 생성)
@@ -52,7 +58,7 @@ public class FileService {
 		NewVersionFileUploadRequest request,
 		MultipartFile multipartFile) {
 		// 부모 파일 정보 가져오기
-		final File parentFile = getFile(parentFileId);
+		final File parentFile = getFileEntity(parentFileId);
 
 		// 부모 파일이 최신 버전인지 확인
 		if (!parentFile.isLatest()) {
@@ -90,13 +96,24 @@ public class FileService {
 		return savedFile.getId();
 	}
 
-	// 파일 버전 업데이트
+	// 파일 조회
+	public FileGetResponse getFileInfo(Long fileId) {
+		return FileGetResponse.of(getFileEntity(fileId));
+	}
+
+	// 파일 트리 조회
+	public List<FileGetResponse> getFileTree(Long fileId) {
+		final File file = getFileEntity(fileId);
+		return fileRepository.findAllByRootFileId(file.getRootFileId())
+			.stream()
+			.map(FileGetResponse::of).toList();
+	}
 
 	// 파일 이동
 
 	// 파일 삭제
 
-	private File getFile(Long fileId) {
+	private File getFileEntity(Long fileId) {
 		return fileRepository.findById(fileId)
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
 	}

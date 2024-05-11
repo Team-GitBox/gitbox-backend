@@ -89,6 +89,10 @@ public class File {
 		this.rootFileId = rootFileId;
 	}
 
+	public void updateRootFileId(Long id) {
+		this.rootFileId = id;
+	}
+
 	public void delete() {
 		this.status = FileStatus.DELETED;
 	}
