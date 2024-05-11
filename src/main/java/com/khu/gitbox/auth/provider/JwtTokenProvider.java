@@ -84,14 +84,22 @@ public class JwtTokenProvider {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
 	}
 
+	public String getEmail(String token) {
+		Claims claims = Jwts.parser()
+			.setSigningKey(key()).build()
+			.parseClaimsJws(token)
+			.getBody();
+
+		return claims.getSubject();
+	}
+
 	public Long getId(String token) {
-		Long id = Jwts.parser()
-				.setSigningKey(key()).build()
-				.parseClaimsJws(token)
-				.getBody()
-				.get("id", Long.class);
+		Claims claims = Jwts.parser()
+			.setSigningKey(key()).build()
+			.parseClaimsJws(token)
+			.getPayload();
 
-		return id;
-
+		return claims.get("id", Long.class);
 	}
 }
+

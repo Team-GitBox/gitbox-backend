@@ -1,5 +1,7 @@
 package com.khu.gitbox.domain.member.entity;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,9 +17,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "member")
 @Entity
 @Getter
+@DynamicUpdate
 @NoArgsConstructor
 public class Member {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -40,6 +42,14 @@ public class Member {
 
 	@Builder
 	public Member(String email, String password, String name, String profileImage) {
+		this.email = email;
+		this.password = password;
+		this.name = name;
+		this.profileImage = profileImage;
+		this.role = Role.USER;
+	}
+
+	public void updateMember(String email, String password, String name, String profileImage) {
 		this.email = email;
 		this.password = password;
 		this.name = name;
