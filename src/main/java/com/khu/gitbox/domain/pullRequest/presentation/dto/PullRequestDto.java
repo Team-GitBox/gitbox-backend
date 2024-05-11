@@ -10,7 +10,8 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class PullRequestDto {
     private String title;
     private String message;

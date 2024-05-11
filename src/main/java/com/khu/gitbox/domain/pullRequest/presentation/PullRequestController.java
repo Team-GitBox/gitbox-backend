@@ -46,7 +46,7 @@ public class PullRequestController {
     public ResponseEntity<ApiResponse<Page>> history(
             @PathVariable Long workspaceid,
             @RequestParam int page,
-            @PageableDefault(page = 0, size = 5)Pageable pageable) {
+            @PageableDefault(page = 0, size = 5) Pageable pageable) {
 
         Page<ActionHistoryDto> actionHistoryList = pullRequestService.getActionHistoryList(page, pageable, workspaceid);
 

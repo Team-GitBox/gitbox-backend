@@ -11,7 +11,6 @@ import com.khu.gitbox.domain.pullRequest.entity.PullRequestComment;
 import com.khu.gitbox.domain.pullRequest.infrastructure.ActionHistoryRepository;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestCommentRepository;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestRepository;
-import com.khu.gitbox.domain.pullRequest.presentation.PullRequestController;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.ActionHistoryDto;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestCommentDto;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestDto;
@@ -55,7 +54,7 @@ public class PullRequestService {
                 .fileUrl(file.getUrl())
                 .build();
 
-        if(!commentList.isEmpty()) {
+        if (!commentList.isEmpty()) {
             pullRequestDto.setCommentDtoList(commentList);
         }
 
@@ -81,23 +80,21 @@ public class PullRequestService {
         Optional<List<PullRequestComment>> responsers = pullRequestCommentRepository.findAllByPullRequestId(pullRequest.get().getId());
 
         // 저장했는데 해당 워크스페이스 수 -1 과 코멘트를 남긴 사람의 수가 같다면 true와 false를 비교
-        if(responsers.get().size() == 3/*동원이형이랑 합치면 수정해야함. workspace의 수 - 1*/) {
+        if (responsers.get().size() == 3/*동원이형이랑 합치면 수정해야함. workspace의 수 - 1*/) {
             Optional<File> file = fileRepository.findById(fileId);
             int trueCount = 0;
             int falseCount = 0;
 
-            for(PullRequestComment responser : responsers.get()) {
-                if(responser.getIsApproved()) trueCount++;
+            for (PullRequestComment responser : responsers.get()) {
+                if (responser.getIsApproved()) trueCount++;
                 else falseCount++;
             }
 
-            if(trueCount > falseCount) {
+            if (trueCount > falseCount) {
                 file.get().builder().isApproved(true);
-            }
-            else {
+            } else {
                 file.get().builder().isApproved(false);
             }
-
             fileRepository.save(file.get());
         }
     }
