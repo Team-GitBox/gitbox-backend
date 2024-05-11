@@ -63,7 +63,7 @@ public class File {
 
 	@Column(name = "root_file_id")
 	private Long rootFileId;
-	
+
 	@Builder
 	File(
 		String name,
@@ -99,6 +99,10 @@ public class File {
 
 	public void updateFileName(String name) {
 		this.name = name;
+	}
+
+	public void updateStatus(FileStatus status) {
+		this.status = status;
 	}
 
 	public void delete() {
