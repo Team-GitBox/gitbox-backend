@@ -42,13 +42,13 @@ public class PullRequestController {
     }
 
     // workspace메인화면에서 history버튼?같이 클릭해야 알 수 있을 듯?
-    @GetMapping("/history")
+    @GetMapping("/{workspaceid}/history")
     public ResponseEntity<ApiResponse<Page>> history(
-            @PathVariable Long fileId,
+            @PathVariable Long workspaceid,
             @RequestParam int page,
             @PageableDefault(page = 0, size = 5)Pageable pageable) {
 
-        Page<ActionHistoryDto> actionHistoryList = pullRequestService.getActionHistoryList(page, pageable);
+        Page<ActionHistoryDto> actionHistoryList = pullRequestService.getActionHistoryList(page, pageable, workspaceid);
 
         return ResponseEntity.ok(ApiResponse.ok(actionHistoryList));
 

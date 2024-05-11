@@ -8,6 +8,7 @@ import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
 import com.khu.gitbox.domain.pullRequest.entity.ActionHistory;
 import com.khu.gitbox.domain.pullRequest.entity.PullRequest;
 import com.khu.gitbox.domain.pullRequest.entity.PullRequestComment;
+import com.khu.gitbox.domain.pullRequest.infrastructure.ActionHistoryRepository;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestCommentRepository;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestRepository;
 import com.khu.gitbox.domain.pullRequest.presentation.PullRequestController;
@@ -31,6 +32,7 @@ public class PullRequestService {
     private final PullRequestCommentRepository pullRequestCommentRepository;
     private final MemberRepository memberRepository;
     private final FileRepository fileRepository;
+    private final ActionHistoryRepository actionHistoryRepository;
 
     public PullRequestDto infoPullRequest(Long fileId) {
 
@@ -100,9 +102,11 @@ public class PullRequestService {
         }
     }
 
-    public Page<ActionHistoryDto> getActionHistoryList(int page, Pageable pageable) {
+    public Page<ActionHistoryDto> getActionHistoryList(int page, Pageable pageable, Long workspaceId) {
+        Page<ActionHistory> allByWorkspaceId = actionHistoryRepository.findAllByWorkspaceId(workspaceId, pageable);
 
+        Page<ActionHistoryDto> actionHistoryDtos = null;
 
-        return
+        return actionHistoryDtos;
     }
 }
