@@ -1,5 +1,6 @@
 package com.khu.gitbox.domain.action.entity;
 
+import com.khu.gitbox.common.BaseEntity;
 import com.khu.gitbox.domain.action.ActionHistoryDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "action_history")
-public class ActionHistory {
+public class ActionHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

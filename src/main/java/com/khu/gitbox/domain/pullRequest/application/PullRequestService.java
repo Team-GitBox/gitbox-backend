@@ -31,17 +31,18 @@ public class PullRequestService {
     public PullRequestDto infoPullRequest(Long fileId) {
 
         PullRequest pullRequest = pullRequestRepository.findByFileId(fileId).orElseThrow(() -> {
-            throw new CustomException(HttpStatus.NOT_FOUND, "pull request is null. check your file again.");
+            throw new CustomException(HttpStatus.NOT_FOUND, "pull-request가 존재하지 않습니다. 해당 파일을 다시 확인해주세요");
         });
         Member writer = memberRepository.findById(pullRequest.getWriterId()).orElseThrow(() -> {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Writer is not in Member database.");
+            throw new CustomException(HttpStatus.NOT_FOUND, "작성자가 존재하지 않습니다.");
         });
         File file = fileRepository.findById(fileId).orElseThrow(() -> {
-            throw new CustomException(HttpStatus.NOT_FOUND, "File is not match in file database.");
+            throw new CustomException(HttpStatus.NOT_FOUND, "찾는 파일이 존재하지 않습니다.");
         });
 
-        List<PullRequestComment> commentList = pullRequestCommentRepository.findAllByPullRequestId(pullRequest.getId())
-                .get();
+        List<PullRequestComment> commentList = pullRequestCommentRepository.findAllByPullRequestId(pullRequest.getId()).orElseThrow(() -> {
+            throw new CustomException(HttpStatus.NOT_FOUND, "코멘트를 찾을 수 없습니다.");
+        });
 
         PullRequestDto pullRequestDto = PullRequestDto.builder()
                 .title(pullRequest.getTitle())
@@ -60,28 +61,30 @@ public class PullRequestService {
 
     public void isApprovedPullRequest(PullRequestCommentDto pullRequestCommentDto, Long reviewerId, Long fileId) {
 
-        Optional<PullRequest> pullRequest = pullRequestRepository.findByFileId(fileId);
+        PullRequest pullRequest = pullRequestRepository.findByFileId(fileId).orElseThrow(() -> {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "현재 보낸 파일(fileId)을 찾을 수 없습니다.")
+        });
 
         // comment 내용 저장
         PullRequestComment pullRequestComment = new PullRequestComment(
                 pullRequestCommentDto.getComment(),
                 pullRequestCommentDto.getIsApproved(),
                 reviewerId,
-                pullRequest.get().getId()
+                pullRequest.getId()
         );
 
         pullRequestCommentRepository.save(pullRequestComment);
 
-        Optional<List<PullRequestComment>> responsers = pullRequestCommentRepository.findAllByPullRequestId(
-                pullRequest.get().getId());
+        List<PullRequestComment> responsers = pullRequestCommentRepository.findAllByPullRequestId(
+                pullRequest.getId()).get();
 
         // 저장했는데 해당 워크스페이스 수 -1 과 코멘트를 남긴 사람의 수가 같다면 true와 false를 비교
-        if (responsers.get().size() == 3/*동원이형이랑 합치면 수정해야함. workspace의 수 - 1*/) {
+        if (responsers.size() == 3/*동원이형이랑 합치면 수정해야함. workspace의 수 - 1*/) {
             Optional<File> file = fileRepository.findById(fileId);
             int trueCount = 0;
             int falseCount = 0;
 
-            for (PullRequestComment responser : responsers.get()) {
+            for (PullRequestComment responser : responsers) {
                 if (responser.getIsApproved())
                     trueCount++;
                 else
