@@ -12,12 +12,13 @@ import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestCommentReposi
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestRepository;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestCommentDto;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestDto;
+import com.khu.gitbox.domain.workspace.entity.WorkspaceMember;
+import com.khu.gitbox.domain.workspace.infrastructure.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class PullRequestService {
     private final PullRequestCommentRepository pullRequestCommentRepository;
     private final MemberRepository memberRepository;
     private final FileRepository fileRepository;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
 
     public PullRequestDto infoPullRequest(Long fileId) {
 
@@ -62,7 +64,7 @@ public class PullRequestService {
     public void isApprovedPullRequest(PullRequestCommentDto pullRequestCommentDto, Long reviewerId, Long fileId) {
 
         PullRequest pullRequest = pullRequestRepository.findByFileId(fileId).orElseThrow(() -> {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "현재 보낸 파일(fileId)을 찾을 수 없습니다.")
+            throw new CustomException(HttpStatus.BAD_REQUEST, "현재 보낸 파일(fileId)을 찾을 수 없습니다.");
         });
 
         // comment 내용 저장
@@ -77,10 +79,12 @@ public class PullRequestService {
 
         List<PullRequestComment> responsers = pullRequestCommentRepository.findAllByPullRequestId(
                 pullRequest.getId()).get();
+        File file = fileRepository.findById(fileId).get();
 
-        // 저장했는데 해당 워크스페이스 수 -1 과 코멘트를 남긴 사람의 수가 같다면 true와 false를 비교
-        if (responsers.size() == 3/*동원이형이랑 합치면 수정해야함. workspace의 수 - 1*/) {
-            Optional<File> file = fileRepository.findById(fileId);
+        List<WorkspaceMember> members = workspaceMemberRepository.findByWorkspaceId(file.getWorkspaceId());
+
+        if (members.size() - 1 == responsers.size()) {
+
             int trueCount = 0;
             int falseCount = 0;
 
@@ -92,11 +96,12 @@ public class PullRequestService {
             }
 
             if (trueCount > falseCount) {
-                file.get().updateStatus(FileStatus.APPROVED);
+                file.updateStatus(FileStatus.APPROVED);
             } else {
-                file.get().updateStatus(FileStatus.REJECTED);
+                file.updateStatus(FileStatus.REJECTED);
             }
-            fileRepository.save(file.get());
+
+            fileRepository.save(file);
         }
     }
 
