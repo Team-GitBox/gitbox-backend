@@ -11,4 +11,3 @@ import com.khu.gitbox.domain.member.entity.Member;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findByEmail(String email);
 }
-
