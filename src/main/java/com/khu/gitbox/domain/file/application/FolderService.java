@@ -39,43 +39,29 @@ public class FolderService {
 
 	@Transactional(readOnly = true)
 	public FolderGetResponse getFolder(Long workspaceId, Long folderId) {
-		final Folder folder = getFolderEntity(workspaceId, folderId);
-
-		return new FolderGetResponse(
-			folder.getId(),
-			folder.getName(),
-			folder.getParentFolderId(),
-			folder.getWorkspaceId()
-		);
+		final Folder folder = getAvailableFolder(workspaceId, folderId);
+		return FolderGetResponse.of(folder);
 	}
 
 	public FolderGetResponse updateFolder(Long workspaceId, Long folderId, FolderUpdateRequest request) {
-		final Folder folder = getFolderEntity(workspaceId, folderId);
-
+		final Folder folder = getAvailableFolder(workspaceId, folderId);
 		folder.updateFolder(request.name(), request.parentFolderId());
-
-		return new FolderGetResponse(
-			folder.getId(),
-			folder.getName(),
-			folder.getParentFolderId(),
-			folder.getWorkspaceId()
-		);
+		return FolderGetResponse.of(folder);
 	}
 
 	public void deleteFolder(Long workspaceId, Long folderId) {
-		final Folder folder = getFolderEntity(workspaceId, folderId);
+		final Folder folder = getAvailableFolder(workspaceId, folderId);
 		fileRepository.deleteByFolderId(folderId);
 		folderRepository.delete(folder);
+	}
+
+	private Folder getAvailableFolder(Long workspaceId, Long folderId) {
+		return folderRepository.findByIdAndWorkspaceId(folderId, workspaceId)
+			.orElseThrow(() -> new IllegalArgumentException("폴더를 찾을 수 없습니다."));
 	}
 
 	private void validateWorkspace(Long workspaceId) {
 		workspaceRepository.findById(workspaceId)
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."));
 	}
-
-	private Folder getFolderEntity(Long workspaceId, Long folderId) {
-		return folderRepository.findByIdAndWorkspaceId(folderId, workspaceId)
-			.orElseThrow(() -> new IllegalArgumentException("폴더를 찾을 수 없습니다."));
-	}
-
 }

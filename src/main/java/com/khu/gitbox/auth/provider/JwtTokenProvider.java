@@ -86,17 +86,17 @@ public class JwtTokenProvider {
 
 	public String getEmail(String token) {
 		Claims claims = Jwts.parser()
-			.setSigningKey(key()).build()
-			.parseClaimsJws(token)
-			.getBody();
+			.verifyWith(key()).build()
+			.parseSignedClaims(token)
+			.getPayload();
 
 		return claims.getSubject();
 	}
 
 	public Long getId(String token) {
 		Claims claims = Jwts.parser()
-			.setSigningKey(key()).build()
-			.parseClaimsJws(token)
+			.verifyWith(key()).build()
+			.parseSignedClaims(token)
 			.getPayload();
 
 		return claims.get("id", Long.class);

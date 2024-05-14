@@ -12,9 +12,18 @@ import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
+import com.khu.gitbox.domain.file.presentation.dto.request.FileCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileUpdateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.request.PullRequestCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
+import com.khu.gitbox.domain.member.entity.Member;
+import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
+import com.khu.gitbox.domain.pullRequest.entity.PullRequest;
+import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestRepository;
+import com.khu.gitbox.domain.workspace.entity.Workspace;
+import com.khu.gitbox.domain.workspace.infrastructure.WorkspaceRepository;
 import com.khu.gitbox.s3.S3Service;
+import com.khu.gitbox.util.SecurityContextUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +34,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class FileService {
 	private final FileRepository fileRepository;
+	private final MemberRepository memberRepository;
+	private final WorkspaceRepository workspaceRepository;
+	private final PullRequestRepository pullRequestRepository;
 	private final S3Service s3Service;
 
 	// 파일 업로드
-	public Long uploadFile(Long workspaceId, Long folderId, MultipartFile multipartFile) {
+	public FileGetResponse uploadFile(FileCreateRequest request, MultipartFile multipartFile) {
+		final Member member = getCurrentMember();
+		final Workspace workspace = getAvailableWorkspace(request.workspaceId());
+
 		final String fileName = multipartFile.getOriginalFilename();
 		final FileType fileType = FileType.from(getExtension(fileName));
 
@@ -40,37 +55,31 @@ public class FileService {
 			.url(s3Service.uploadFile(multipartFile))
 			.version(1L)
 			.isLatest(true)
-			.writerId(1L) // TODO: 임시
-			.workspaceId(workspaceId)
-			.folderId(folderId)
+			.writerId(member.getId())
+			.workspaceId(workspace.getId())
+			.folderId(request.folderId())
 			.rootFileId(null)
 			.parentFileId(null)
 			.build();
-
-		// TODO: 워크스페이스 용량 업데이트
+		workspace.increaseUsedStorage(file.getSize());
 
 		final File savedFile = fileRepository.save(file);
 		savedFile.updateRootFileId(savedFile.getId());
-		return fileRepository.save(savedFile).getId();
+
+		return FileGetResponse.of(fileRepository.save(savedFile));
 	}
 
 	// 새로운 버전 파일 업로드 (+ PR 생성)
-	public Long uploadNewVersionFile(
+	public FileGetResponse uploadNewVersionFile(
 		Long parentFileId,
+		PullRequestCreateRequest request,
 		MultipartFile multipartFile) {
 		// 부모 파일 정보 가져오기
-		final File parentFile = getFileEntity(parentFileId);
+		final Member member = getCurrentMember();
+		final File parentFile = getAvailableFile(parentFileId);
 
-		// 부모 파일이 최신 버전인지 확인
-		if (!parentFile.isLatest()) {
-			throw new CustomException(HttpStatus.BAD_REQUEST, "부모 파일이 최신 버전이 아닙니다.");
-		}
-
-		// 이미 업데이트 대기 중인 파일이 없는지 확인 (PR 여부)
-		fileRepository.findPendingFile(parentFileId)
-			.ifPresent(pendingFile -> {
-				throw new CustomException(HttpStatus.BAD_REQUEST, "이미 업데이트 대기 중인 파일이 있습니다.");
-			});
+		// 부모 파일 업데이트 가능 여부 확인
+		validateParentFileForUpdate(parentFileId, parentFile);
 
 		// 파일 업로드 (PR 승인 시 부모 파일을 구버전으로)
 		final String fileName = multipartFile.getOriginalFilename();
@@ -92,19 +101,30 @@ public class FileService {
 			.build();
 		final File savedFile = fileRepository.save(newVersionFile);
 
-		// TODO: PR 생성
+		// PR 생성
+		final PullRequest pullRequest = PullRequest.builder()
+			.title(request.title())
+			.message(request.message())
+			.writerId(member.getId())
+			.fileId(savedFile.getId())
+			.build();
+		pullRequestRepository.save(pullRequest);
 
-		return savedFile.getId();
+		// 워크스페이스 용량 업데이트
+		final Workspace workspace = getAvailableWorkspace(parentFile.getWorkspaceId());
+		workspace.increaseUsedStorage(savedFile.getSize());
+
+		return FileGetResponse.of(savedFile);
 	}
 
 	// 파일 조회
 	public FileGetResponse getFileInfo(Long fileId) {
-		return FileGetResponse.of(getFileEntity(fileId));
+		return FileGetResponse.of(getAvailableFile(fileId));
 	}
 
 	// 파일 트리 조회
 	public List<FileGetResponse> getFileTree(Long fileId) {
-		final File file = getFileEntity(fileId);
+		final File file = getAvailableFile(fileId);
 		return fileRepository.findAllByRootFileId(file.getRootFileId())
 			.stream()
 			.map(FileGetResponse::of).toList();
@@ -112,26 +132,37 @@ public class FileService {
 
 	// 파일 업데이트 (이름 수정)
 	public void updateFile(Long fileId, FileUpdateRequest request) {
-		final File file = getFileEntity(fileId);
+		final File file = getAvailableFile(fileId);
 		file.updateFileName(request.name());
 	}
 
 	// 파일 삭제
 	public void deleteFile(Long fileId) {
-		final File file = getFileEntity(fileId);
+		final File file = getAvailableFile(fileId);
 		file.delete();
 	}
-	
+
 	// 파일 트리 삭제
 	public void deleteFileTree(Long fileId) {
-		final File file = getFileEntity(fileId);
+		final File file = getAvailableFile(fileId);
 		fileRepository.findAllByRootFileId(file.getRootFileId())
 			.forEach(File::delete);
 	}
 
-	private File getFileEntity(Long fileId) {
+	private Member getCurrentMember() {
+		final Long memberId = SecurityContextUtil.getCurrentMemberId();
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+	}
+
+	private File getAvailableFile(Long fileId) {
 		return fileRepository.findById(fileId)
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
+	}
+
+	private Workspace getAvailableWorkspace(Long workspaceId) {
+		return workspaceRepository.findById(workspaceId)
+			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."));
 	}
 
 	private String getExtension(String fileName) {
@@ -139,4 +170,16 @@ public class FileService {
 		return fileName.substring(fileName.lastIndexOf(".") + 1);
 	}
 
+	private void validateParentFileForUpdate(Long parentFileId, File parentFile) {
+		// 부모 파일이 최신 버전인지 확인
+		if (!parentFile.isLatest()) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "부모 파일이 최신 버전이 아닙니다.");
+		}
+
+		// 이미 업데이트 대기 중인 파일이 없는지 확인 (PR 여부)
+		fileRepository.findPendingFile(parentFileId)
+			.ifPresent(pendingFile -> {
+				throw new CustomException(HttpStatus.BAD_REQUEST, "이미 업데이트 대기 중인 파일이 있습니다.");
+			});
+	}
 }
