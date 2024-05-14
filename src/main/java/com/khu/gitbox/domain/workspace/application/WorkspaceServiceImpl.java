@@ -7,7 +7,7 @@ import com.khu.gitbox.domain.workspace.entity.Workspace;
 import com.khu.gitbox.domain.workspace.entity.WorkspaceMember;
 import com.khu.gitbox.domain.workspace.infrastructure.WorkspaceMemberRepository;
 import com.khu.gitbox.domain.workspace.infrastructure.WorkspaceRepository;
-import com.khu.gitbox.domain.workspace.presentation.dto.MakeWorkspace;
+import com.khu.gitbox.domain.workspace.presentation.dto.CreateWorkspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.MemberInfo;
 import com.khu.gitbox.domain.workspace.presentation.dto.OwnerInfo;
 import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceDetail;
@@ -28,7 +28,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceMemberRepository workspaceMemberRepository; // 멤버 리포지토리 주입
 
-    public Long createWorkspace(MakeWorkspace request, Long ownerId) {
+    public Long createWorkspace(CreateWorkspace request, Long ownerId) {
         Workspace workspace = Workspace.builder()
                 .name(request.getName())
                 .ownerId(ownerId)
@@ -62,7 +62,16 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         return workspace.getId();
     }
 
-    public void addMembers(List<String> memberEmails, Long workspaceId) {
+    public void addMembers(List<String> memberEmails, Long workspaceId, Long memberId) {
+
+        Workspace workspace = findById(workspaceId);
+
+        // 워크스페이스의 ownerId와 현재 사용자의 ID 비교
+        if (!workspace.getOwnerId().equals(memberId)) {
+            throw new CustomException(HttpStatus.FORBIDDEN, "해당 워크스페이스의 사용자가 아닙니다.");
+        }
+
+        // 보낸 이메일들이 멤버 디비에 있는지 확인
         for (String email : memberEmails) {
             // 이메일로 멤버 찾기
             Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
@@ -71,7 +80,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
             // WorkspaceMember 객체 생성
             WorkspaceMember workspaceMember = WorkspaceMember.builder()
-                    .memberId(member.getId()) // 여기를 수정했습니다: 멤버의 ID를 직접 사용
+                    .memberId(member.getId())
                     .workspaceId(workspaceId)
                     .build();
 
@@ -88,19 +97,27 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     }
 
     @Override
-    public void deleteWorkspaces(Long worspaceId) {
-        // 워크스페이스 삭제 로직 구현
-        workspaceRepository.deleteById(worspaceId);
+    public void deleteWorkspaces(Long workspaceId, Long requestMemberId) {
+        if (!workspaceRepository.findById(workspaceId).isPresent()) {
+            throw new EntityNotFoundException("Workspace not found with name: " + workspaceId);
+        }
+        workspaceRepository.deleteById(workspaceId);
     }
 
     @Override
-    public void deleteMembers(List<Long> memberIds) {
+    public void deleteMembers(List<Long> memberIds, Long requestMemberId) {
+        Workspace workspace = findById(requestMemberId);
+
+        if (!workspace.getOwnerId().equals(requestMemberId)) {
+            throw new CustomException(HttpStatus.FORBIDDEN, "해당 워크스페이스의 사용자가 아닙니다.");
+        }
+
         for (Long memberId : memberIds) {
             workspaceMemberRepository.deleteById(memberId);
         }
     }
 
-    //
+    // 워크스페이스 정보
     @Override
     public WorkspaceDetail findByMemberIdAndWorkspaceId(Long workspaceId, Long memberId) {
         // 워크스페이스 멤버 확인

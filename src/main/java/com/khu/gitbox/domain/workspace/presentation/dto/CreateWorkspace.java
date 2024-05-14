@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MakeWorkspace {
+public class CreateWorkspace {
     private String name;
     private Long maxStorage;
     private Long usedStorage;

@@ -7,8 +7,8 @@ import com.khu.gitbox.domain.action.ActionHistoryService;
 import com.khu.gitbox.domain.workspace.application.WorkspaceServiceImpl;
 import com.khu.gitbox.domain.workspace.entity.Workspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.AddMembers;
+import com.khu.gitbox.domain.workspace.presentation.dto.CreateWorkspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.DeleteMembers;
-import com.khu.gitbox.domain.workspace.presentation.dto.MakeWorkspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceDetail;
 import com.khu.gitbox.util.SecurityContextUtil;
 import jakarta.validation.Valid;
@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,13 +30,12 @@ public class WorkspaceController {
 
     // 워크스페이스 생성
     @PostMapping("")
-    public ResponseEntity<ApiResponse<Long>> createWorkspace(@Valid @RequestBody MakeWorkspace workspace,
+    public ResponseEntity<ApiResponse<Long>> createWorkspace(@Valid @RequestBody CreateWorkspace workspace,
                                                              @RequestHeader(value = "Cookie", required = false) String cookie) {
 
         Long ownerId = SecurityContextUtil.getCurrentMemberId();
-
-        // 모든 이메일이 존재하면 워크스페이스 생성 진행
         Long id = workspaceService.createWorkspace(workspace, ownerId);
+
         return ResponseEntity.ok(ApiResponse.created(id));
     }
 
@@ -47,15 +45,9 @@ public class WorkspaceController {
                                              @RequestHeader("Cookie") String cookie) {
 
         Long memberId = SecurityContextUtil.getCurrentMemberId();
+        workspaceService.addMembers(addMembers.getAddMemberEmail(), workspaceId, memberId);
 
-        Workspace workspace = workspaceService.findById(workspaceId);
-
-        if (workspace.getOwnerId().equals(memberId)) {
-            workspaceService.addMembers(addMembers.getAddMemberEmail(), workspaceId);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당워크스페이스 사용자가 아닙니다.");
-        }
+        return ResponseEntity.ok().build();
     }
 
     //워크스페이스 정보 가져오기
@@ -71,23 +63,16 @@ public class WorkspaceController {
         return ResponseEntity.ok(workspaceDetail); // 워크스페이스 정보 반환
     }
 
-    //워크스페이스 멤버 삭제
+    //워크스페이스 멤버 삭제 문제 있는듯 ?
     @DeleteMapping("/{workspaceId}/members")
     public ResponseEntity<?> deleteWorkspaceMembers(@PathVariable Long workspaceId,
                                                     @Valid @RequestBody DeleteMembers deleteMembers, @RequestHeader("Cookie") String cookie) {
 
         Long memberId = SecurityContextUtil.getCurrentMemberId();
-
-        // 요청에서 workspaceId를 직접 사용합니다.
         Workspace workspace = workspaceService.findById(workspaceId);
 
-        if (workspace.getOwnerId().equals(memberId)) {
-            // deleteMemberIds 리스트를 사용하여 멤버들을 삭제합니다.
-            workspaceService.deleteMembers(deleteMembers.getDeleteMemberIds());
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("워크스페이스 owner가 아닙니다.");
-        }
+        workspaceService.deleteMembers(deleteMembers.getDeleteMemberIds(), memberId);
+        return ResponseEntity.ok().build();
     }
 
     //워크스페이스 삭제
@@ -99,15 +84,9 @@ public class WorkspaceController {
         // 워크스페이스 이름을 사용하여 워크스페이스 정보 조회
         Workspace workspace = workspaceService.findById(workspaceId);
 
-        // 워크스페이스의 ownerId와 memberId 비교
-        if (workspace.getOwnerId().equals(memberId)) {
-            // 일치할 경우, 워크스페이스 삭제 로직 실행
-            workspaceService.deleteWorkspaces(workspace.getId());
-            return ResponseEntity.ok().build(); // 삭제 성공 응답
-        } else {
-            // 소유자가 일치하지 않을 경우, 에러 응답
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied"); // 접근 거부 응답
-        }
+
+        workspaceService.deleteWorkspaces(workspace.getId(), memberId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{workspace}/history")
