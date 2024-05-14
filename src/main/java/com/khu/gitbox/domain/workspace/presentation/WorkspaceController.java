@@ -37,7 +37,7 @@ public class WorkspaceController {
 
     // 워크스페이스 멤버 추가
     @PostMapping("/{workspaceId}/members")
-    public ResponseEntity<ApiResponse<Long>> addMembers(@PathVariable Long workspaceId, @Valid @RequestBody AddMembers addMembers, @RequestHeader("Cookie") String cookie) {
+    public ResponseEntity<String> addMembers(@PathVariable Long workspaceId, @Valid @RequestBody AddMembers addMembers, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12);
         Long memberId = jwtTokenProvider.getId(token);
 
@@ -47,7 +47,7 @@ public class WorkspaceController {
             workspaceService.addMembers(addMembers.getAddMemberEmail(), workspaceId);
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당워크스페이스 사용자가 아닙니다.");
         }
     }
 
@@ -76,7 +76,7 @@ public class WorkspaceController {
             workspaceService.deleteMembers(deleteMembers.getDeleteMemberIds());
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("워크스페이스 owner가 아닙니다.");
         }
     }
 
