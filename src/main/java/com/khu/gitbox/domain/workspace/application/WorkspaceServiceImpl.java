@@ -66,7 +66,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         for (String email : memberEmails) {
             // 이메일로 멤버 찾기
             Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
-                throw new CustomException(HttpStatus.NOT_FOUND, "없는 사람이 있습니다");
+                throw new CustomException(HttpStatus.NOT_FOUND, "잘못 입력했다.");
             });
 
             // WorkspaceMember 객체 생성
@@ -80,11 +80,11 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         }
     }
 
-
     @Override
     public Workspace findById(Long workspaceId) {
         // 워크스페이스 id로 검색 로직 구현
-        return workspaceRepository.findById(workspaceId).orElseThrow(() -> new EntityNotFoundException("Workspace not found with name: " + workspaceId));
+        return workspaceRepository.findById(workspaceId)
+                .orElseThrow(() -> new EntityNotFoundException("Workspace not found with name: " + workspaceId));
     }
 
     @Override
@@ -105,11 +105,11 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     public WorkspaceDetail findByMemberIdAndWorkspaceId(Long workspaceId, Long memberId) {
         // 워크스페이스 멤버 확인
         WorkspaceMember workspaceMember = workspaceMemberRepository.findByMemberIdAndWorkspaceId(memberId, workspaceId)
-                .orElseThrow(() -> new EntityNotFoundException("Workspace not found or member does not have access to the workspace with ID: " + workspaceId));
+                .orElseThrow(() -> new EntityNotFoundException("너 누구야 여기 워크스페이스 아니잖아"));
 
         // 워크스페이스 정보 가져오기
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new EntityNotFoundException("Workspace not found with ID: " + workspaceId));
+                .orElseThrow(() -> new EntityNotFoundException("넌 누구냐"));
 
         // 워크스페이스로부터 소유자 정보 가져오기
         OwnerInfo ownerInfo = memberRepository.findById(workspace.getOwnerId())
@@ -125,10 +125,8 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                 .collect(Collectors.toList());
 
         // WorkspaceDetail 객체 생성 및 반환
-        return new WorkspaceDetail(workspaceId, workspace.getName(), ownerInfo, memberInfoList, workspace.getMaxStorage(), workspace.getUsedStorage());
+        return new WorkspaceDetail(workspaceId, workspace.getName(), ownerInfo, memberInfoList,
+                workspace.getMaxStorage(), workspace.getUsedStorage());
     }
 
 }
-
-
-
