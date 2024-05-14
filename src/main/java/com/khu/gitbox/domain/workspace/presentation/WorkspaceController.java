@@ -2,7 +2,8 @@ package com.khu.gitbox.domain.workspace.presentation;
 
 import com.khu.gitbox.auth.provider.JwtTokenProvider;
 import com.khu.gitbox.common.response.ApiResponse;
-import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
+import com.khu.gitbox.domain.action.ActionHistoryDto;
+import com.khu.gitbox.domain.action.ActionHistoryService;
 import com.khu.gitbox.domain.workspace.application.WorkspaceServiceImpl;
 import com.khu.gitbox.domain.workspace.entity.Workspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.AddMembers;
@@ -11,6 +12,9 @@ import com.khu.gitbox.domain.workspace.presentation.dto.MakeWorkspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceDetail;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +26,7 @@ public class WorkspaceController {
 
     private final WorkspaceServiceImpl workspaceService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
+    private final ActionHistoryService actionHistoryService;
 
     // 워크스페이스 생성
     @PostMapping("")
@@ -99,4 +103,17 @@ public class WorkspaceController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied"); // 접근 거부 응답
         }
     }
+
+    @GetMapping("/{workspace}/history")
+    public ResponseEntity<ApiResponse<Page>> history(
+            @PathVariable Long workspaceId,
+            @RequestParam int page,
+            @PageableDefault(page = 0, size = 7) Pageable pageable) {
+
+        Page<ActionHistoryDto> actionHistoryList = actionHistoryService.getActionHistoryList(page, pageable, workspaceId);
+
+        return ResponseEntity.ok(ApiResponse.ok(actionHistoryList));
+
+    }
+
 }
