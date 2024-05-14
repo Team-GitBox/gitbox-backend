@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddMembers {
-    private Long workspaceId;
     private List<String> addMemberEmail;
 
 }

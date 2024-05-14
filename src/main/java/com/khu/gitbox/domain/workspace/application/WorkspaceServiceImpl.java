@@ -125,7 +125,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                 .collect(Collectors.toList());
 
         // WorkspaceDetail 객체 생성 및 반환
-        return new WorkspaceDetail(workspaceId, workspace.getName(), ownerInfo, memberInfoList,
+        return new WorkspaceDetail(workspace.getName(), ownerInfo, memberInfoList,
                 workspace.getMaxStorage(), workspace.getUsedStorage());
     }
 

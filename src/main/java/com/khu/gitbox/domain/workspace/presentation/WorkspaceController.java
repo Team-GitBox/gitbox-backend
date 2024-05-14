@@ -10,6 +10,7 @@ import com.khu.gitbox.domain.workspace.presentation.dto.AddMembers;
 import com.khu.gitbox.domain.workspace.presentation.dto.DeleteMembers;
 import com.khu.gitbox.domain.workspace.presentation.dto.MakeWorkspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceDetail;
+import com.khu.gitbox.util.SecurityContextUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,13 +29,12 @@ public class WorkspaceController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ActionHistoryService actionHistoryService;
 
-    // TODO: ownerId 필요없음, Cookie에서 가져올 필요 없음
     // 워크스페이스 생성
     @PostMapping("")
     public ResponseEntity<ApiResponse<Long>> createWorkspace(@Valid @RequestBody MakeWorkspace workspace,
                                                              @RequestHeader(value = "Cookie", required = false) String cookie) {
-        String token = cookie.substring(12);
-        Long ownerId = jwtTokenProvider.getId(token);
+
+        Long ownerId = SecurityContextUtil.getCurrentMemberId();
 
         // 모든 이메일이 존재하면 워크스페이스 생성 진행
         Long id = workspaceService.createWorkspace(workspace, ownerId);
@@ -45,8 +45,8 @@ public class WorkspaceController {
     @PostMapping("/{workspaceId}/members")
     public ResponseEntity<String> addMembers(@PathVariable Long workspaceId, @Valid @RequestBody AddMembers addMembers,
                                              @RequestHeader("Cookie") String cookie) {
-        String token = cookie.substring(12);
-        Long memberId = jwtTokenProvider.getId(token);
+
+        Long memberId = SecurityContextUtil.getCurrentMemberId();
 
         Workspace workspace = workspaceService.findById(workspaceId);
 
@@ -62,8 +62,8 @@ public class WorkspaceController {
     @GetMapping("/{workspaceId}")
     public ResponseEntity<WorkspaceDetail> getWorkspace(@PathVariable Long workspaceId,
                                                         @RequestHeader("Cookie") String cookie) {
-        String token = cookie.substring(12); // 토큰 추출
-        Long memberId = jwtTokenProvider.getId(token); // JWT로부터 멤버 ID 추출
+
+        Long memberId = SecurityContextUtil.getCurrentMemberId();
 
         WorkspaceDetail workspaceDetail = workspaceService.findByMemberIdAndWorkspaceId(workspaceId,
                 memberId); // 서비스 호출
@@ -75,8 +75,8 @@ public class WorkspaceController {
     @DeleteMapping("/{workspaceId}/members")
     public ResponseEntity<?> deleteWorkspaceMembers(@PathVariable Long workspaceId,
                                                     @Valid @RequestBody DeleteMembers deleteMembers, @RequestHeader("Cookie") String cookie) {
-        String token = cookie.substring(12);
-        Long memberId = jwtTokenProvider.getId(token);
+
+        Long memberId = SecurityContextUtil.getCurrentMemberId();
 
         // 요청에서 workspaceId를 직접 사용합니다.
         Workspace workspace = workspaceService.findById(workspaceId);
@@ -93,8 +93,8 @@ public class WorkspaceController {
     //워크스페이스 삭제
     @DeleteMapping("/{workspaceId}") // 삭제
     public ResponseEntity<?> deleteWorkspace(@PathVariable Long workspaceId, @RequestHeader("Cookie") String cookie) {
-        String token = cookie.substring(12);
-        Long memberId = jwtTokenProvider.getId(token);
+
+        Long memberId = SecurityContextUtil.getCurrentMemberId();
 
         // 워크스페이스 이름을 사용하여 워크스페이스 정보 조회
         Workspace workspace = workspaceService.findById(workspaceId);
@@ -120,7 +120,6 @@ public class WorkspaceController {
                 workspaceId);
 
         return ResponseEntity.ok(ApiResponse.ok(actionHistoryList));
-
     }
-
 }
+

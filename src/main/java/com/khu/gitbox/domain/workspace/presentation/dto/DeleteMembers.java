@@ -12,6 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteMembers {
-    private Long workspaceId;
     private List<Long> deleteMemberIds;
 }
