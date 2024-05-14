@@ -14,6 +14,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	@Query("SELECT f FROM File f WHERE f.parentFileId = :parentFileId AND f.status = 'PENDING'")
 	Optional<File> findPendingFile(Long parentFileId);
 
-	@Query("SELECT f FROM File f WHERE f.rootFileId = :rootFileId ORDER By f.version DESC")
+	@Query("SELECT f FROM File f WHERE f.rootFileId = :rootFileId ORDER BY f.version DESC")
 	List<File> findAllByRootFileId(Long rootFileId);
 }
