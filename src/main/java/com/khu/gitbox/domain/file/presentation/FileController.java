@@ -16,9 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.file.application.FileService;
-import com.khu.gitbox.domain.file.presentation.dto.FileCreateRequest;
-import com.khu.gitbox.domain.file.presentation.dto.PullRequestCreateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.request.FileCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileUpdateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.request.PullRequestCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -30,20 +30,20 @@ public class FileController {
 	private final FileService fileService;
 
 	@PostMapping(value = "/files", consumes = "multipart/form-data")
-	public ResponseEntity<ApiResponse<Long>> uploadFile(
+	public ResponseEntity<ApiResponse<FileGetResponse>> uploadFile(
 		@RequestPart(value = "request") FileCreateRequest request,
 		@RequestPart(value = "file") MultipartFile multipartFile) {
-		final Long fileId = fileService.uploadFile(request, multipartFile);
-		return ResponseEntity.ok(ApiResponse.ok(fileId));
+		final FileGetResponse response = fileService.uploadFile(request, multipartFile);
+		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
 	@PostMapping(value = "/files/{parentFileId}", consumes = "multipart/form-data")
-	public ResponseEntity<ApiResponse<Long>> uploadNewVersionFile(
+	public ResponseEntity<ApiResponse<FileGetResponse>> uploadNewVersionFile(
 		@PathVariable Long parentFileId,
 		@RequestPart(value = "request") PullRequestCreateRequest request,
 		@RequestPart(value = "file") MultipartFile multipartFile) {
-		final Long newFileId = fileService.uploadNewVersionFile(parentFileId, request, multipartFile);
-		return ResponseEntity.ok(ApiResponse.ok(newFileId));
+		final FileGetResponse response = fileService.uploadNewVersionFile(parentFileId, request, multipartFile);
+		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
 	@GetMapping(value = "/files/{fileId}")
