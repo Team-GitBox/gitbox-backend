@@ -24,7 +24,7 @@ public class WorkspaceController {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
-    //워크스페이스 생성
+    // 워크스페이스 생성
     @PostMapping("")
     public ResponseEntity<ApiResponse<Long>> createWorkspace(@Valid @RequestBody MakeWorkspace workspace, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12);
@@ -35,7 +35,7 @@ public class WorkspaceController {
         return ResponseEntity.ok(ApiResponse.created(id));
     }
 
-    //워크스페이스 멤버 추가
+    // 워크스페이스 멤버 추가
     @PostMapping("/{workspaceId}/members")
     public ResponseEntity<ApiResponse<Long>> addMembers(@PathVariable Long workspaceId, @Valid @RequestBody AddMembers addMembers, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12);
@@ -51,7 +51,7 @@ public class WorkspaceController {
         }
     }
 
-    //워크스페이스 조회
+    //워크스페이스 정보 가져오기
     @GetMapping("/{workspaceId}")
     public ResponseEntity<WorkspaceDetail> getWorkspace(@PathVariable Long workspaceId, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12); // 토큰 추출
@@ -68,6 +68,7 @@ public class WorkspaceController {
         String token = cookie.substring(12);
         Long memberId = jwtTokenProvider.getId(token);
 
+        // 요청에서 workspaceId를 직접 사용합니다.
         Workspace workspace = workspaceService.findById(workspaceId);
 
         if (workspace.getOwnerId().equals(memberId)) {
@@ -79,7 +80,7 @@ public class WorkspaceController {
         }
     }
 
-    //워크스페이스 제거
+    //워크스페이스 삭제
     @DeleteMapping("/{workspaceId}") // 삭제
     public ResponseEntity<?> deleteWorkspace(@PathVariable Long workspaceId, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12);
