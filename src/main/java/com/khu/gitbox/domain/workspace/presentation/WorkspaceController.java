@@ -28,6 +28,7 @@ public class WorkspaceController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ActionHistoryService actionHistoryService;
 
+    // 워크스페이스 생성
     @PostMapping("")
     public ResponseEntity<ApiResponse<Long>> createWorkspace(@Valid @RequestBody MakeWorkspace workspace, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12);
@@ -38,21 +39,23 @@ public class WorkspaceController {
         return ResponseEntity.ok(ApiResponse.created(id));
     }
 
-    @PostMapping("/members")
-    public ResponseEntity<ApiResponse<Long>> addMembers(@Valid @RequestBody AddMembers addMembers, @RequestHeader("Cookie") String cookie) {
+    // 워크스페이스 멤버 추가
+    @PostMapping("/{workspaceId}/members")
+    public ResponseEntity<String> addMembers(@PathVariable Long workspaceId, @Valid @RequestBody AddMembers addMembers, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12);
         Long memberId = jwtTokenProvider.getId(token);
 
-        Workspace workspace = workspaceService.findById(addMembers.getWorkspaceId());
+        Workspace workspace = workspaceService.findById(workspaceId);
 
         if (workspace.getOwnerId().equals(memberId)) {
-            workspaceService.addMembers(addMembers.getAddMemberEmail(), addMembers.getWorkspaceId());
+            workspaceService.addMembers(addMembers.getAddMemberEmail(), workspaceId);
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당워크스페이스 사용자가 아닙니다.");
         }
     }
 
+    //워크스페이스 정보 가져오기
     @GetMapping("/{workspaceId}")
     public ResponseEntity<WorkspaceDetail> getWorkspace(@PathVariable Long workspaceId, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12); // 토큰 추출
@@ -63,24 +66,25 @@ public class WorkspaceController {
         return ResponseEntity.ok(workspaceDetail); // 워크스페이스 정보 반환
     }
 
-
-    @DeleteMapping("/member")
-    public ResponseEntity<?> deleteWorkspaceMembers(@Valid @RequestBody DeleteMembers deleteMembers, @RequestHeader("Cookie") String cookie) {
+    //워크스페이스 멤버 삭제
+    @DeleteMapping("/{workspaceId}/members")
+    public ResponseEntity<?> deleteWorkspaceMembers(@PathVariable Long workspaceId, @Valid @RequestBody DeleteMembers deleteMembers, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12);
         Long memberId = jwtTokenProvider.getId(token);
 
         // 요청에서 workspaceId를 직접 사용합니다.
-        Workspace workspace = workspaceService.findById(deleteMembers.getWorkspaceId());
+        Workspace workspace = workspaceService.findById(workspaceId);
 
         if (workspace.getOwnerId().equals(memberId)) {
             // deleteMemberIds 리스트를 사용하여 멤버들을 삭제합니다.
             workspaceService.deleteMembers(deleteMembers.getDeleteMemberIds());
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("워크스페이스 owner가 아닙니다.");
         }
     }
 
+    //워크스페이스 삭제
     @DeleteMapping("/{workspaceId}") // 삭제
     public ResponseEntity<?> deleteWorkspace(@PathVariable Long workspaceId, @RequestHeader("Cookie") String cookie) {
         String token = cookie.substring(12);
