@@ -28,7 +28,7 @@ public class ActionHistoryService {
         PageRequest pageRequest = PageRequest.of(page, size);
 
         Page<ActionHistory> allByWorkspaceId
-                = actionHistoryRepository.findAllByWorkspaceIdByOrderByIdDesc(workspaceId, pageRequest);
+                = actionHistoryRepository.findAllByWorkspaceId(workspaceId, pageRequest);
         Long total = actionHistoryRepository.countByWorkspaceId(workspaceId); // workspaceId가 같은것들 총 합
 
         if (total > (page * size)) throw new CustomException(HttpStatus.BAD_REQUEST, "현재 요청 방식이 잘못되었습니다.");

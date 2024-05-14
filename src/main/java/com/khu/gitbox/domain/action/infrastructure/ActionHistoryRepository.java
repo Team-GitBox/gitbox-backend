@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ActionHistoryRepository extends JpaRepository<ActionHistory, Long> {
-    Page<ActionHistory> findAllByWorkspaceIdByOrderByIdDesc(Long workspaceId, Pageable pageable);
+    Page<ActionHistory> findAllByWorkspaceId(Long workspaceId, Pageable pageable);
 
     Long countByWorkspaceId(Long workspaceId);
 }
