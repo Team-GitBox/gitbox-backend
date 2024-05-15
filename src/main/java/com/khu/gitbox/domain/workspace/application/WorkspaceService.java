@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,7 +62,7 @@ public class WorkspaceService {
         return workspace.getId();
     }
 
-    public void addMembers(List<String> memberEmails, Long workspaceId, Long memberId) {
+    public List<Long> addMembers(List<String> memberEmails, Long workspaceId, Long memberId) {
 
         Workspace workspace = findById(workspaceId);
 
@@ -69,6 +70,9 @@ public class WorkspaceService {
         if (!workspace.getOwnerId().equals(memberId)) {
             throw new CustomException(HttpStatus.FORBIDDEN, "해당 워크스페이스의 사용자가 아닙니다.");
         }
+
+        // 반환할 멤버 ID 리스트를 초기화
+        List<Long> returnMemberIds = new ArrayList<>();
 
         // 보낸 이메일들이 멤버 디비에 있는지 확인
         for (String email : memberEmails) {
@@ -85,8 +89,14 @@ public class WorkspaceService {
 
             // WorkspaceMember 저장
             workspaceMemberRepository.save(workspaceMember);
+
+            // 멤버 ID 리스트에 추가
+            returnMemberIds.add(member.getId());
         }
+
+        return returnMemberIds;
     }
+
 
     public Workspace findById(Long workspaceId) {
         // 워크스페이스 id로 검색 로직 구현
@@ -95,7 +105,7 @@ public class WorkspaceService {
     }
 
     @Transactional
-    public void deleteWorkspaces(Long workspaceId, Long requestOwnerId) {
+    public Long deleteWorkspaces(Long workspaceId, Long requestOwnerId) {
         if (!workspaceRepository.existsByOwnerId(requestOwnerId)) {
             throw new CustomException(HttpStatus.FORBIDDEN, "해당 워크스페이스의 소유주가 아닙니다.");
         }
@@ -103,6 +113,7 @@ public class WorkspaceService {
         workspaceRepository.deleteById(workspaceId);
         workspaceMemberRepository.deleteByWorkspaceId(workspaceId);
 
+        return workspaceId;
     }
 
 

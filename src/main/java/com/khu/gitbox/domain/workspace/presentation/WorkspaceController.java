@@ -19,6 +19,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/workspace")
 @RequiredArgsConstructor
@@ -41,27 +43,27 @@ public class WorkspaceController {
 
     // 워크스페이스 멤버 추가
     @PostMapping("/{workspaceId}/members")
-    public ResponseEntity<String> addMembers(@PathVariable Long workspaceId, @Valid @RequestBody AddMembers addMembers,
-                                             @RequestHeader("Cookie") String cookie) {
+    public ResponseEntity<ApiResponse<List<Long>>> addMembers(@PathVariable Long workspaceId, @Valid @RequestBody AddMembers addMembers,
+                                                              @RequestHeader("Cookie") String cookie) {
 
         Long memberId = SecurityContextUtil.getCurrentMemberId();
-        workspaceService.addMembers(addMembers.getAddMemberEmail(), workspaceId, memberId);
+        List<Long> id = workspaceService.addMembers(addMembers.getAddMemberEmail(), workspaceId, memberId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.created(id));
     }
 
     //워크스페이스 정보 가져오기
     @GetMapping("/{workspaceId}")
-    public ResponseEntity<WorkspaceDetail> getWorkspace(@PathVariable Long workspaceId,
-                                                        @RequestHeader("Cookie") String cookie) {
+    public ResponseEntity<ApiResponse<WorkspaceDetail>> getWorkspace(@PathVariable Long workspaceId,
+                                                                     @RequestHeader("Cookie") String cookie) {
 
         Long memberId = SecurityContextUtil.getCurrentMemberId();
-        WorkspaceDetail workspaceDetail = workspaceService.findByMemberIdAndWorkspaceId(workspaceId,
-                memberId); // 서비스 호출
+        WorkspaceDetail workspaceDetail = workspaceService.findByMemberIdAndWorkspaceId(workspaceId, memberId); // 서비스 호출
 
-        return ResponseEntity.ok(workspaceDetail); // 워크스페이스 정보 반환
+        return ResponseEntity.ok(ApiResponse.created(workspaceDetail)); // 워크스페이스 정보 반환
     }
 
+    //워크스페이스 멤버 삭제
     @DeleteMapping("/{workspaceId}/members")
     public ResponseEntity<?> deleteWorkspaceMembers(@PathVariable Long workspaceId,
                                                     @Valid @RequestBody DeleteMembers deleteMembersEmails) {
@@ -75,13 +77,13 @@ public class WorkspaceController {
 
     //워크스페이스 삭제
     @DeleteMapping("/{workspaceId}") // 삭제
-    public ResponseEntity<?> deleteWorkspace(@PathVariable Long workspaceId, @RequestHeader("Cookie") String cookie) {
+    public ResponseEntity<ApiResponse<Long>> deleteWorkspace(@PathVariable Long workspaceId, @RequestHeader("Cookie") String cookie) {
 
         Long memberId = SecurityContextUtil.getCurrentMemberId();
         Workspace workspace = workspaceService.findById(workspaceId);
 
-        workspaceService.deleteWorkspaces(workspace.getId(), memberId);
-        return ResponseEntity.ok().build();
+        Long id = workspaceService.deleteWorkspaces(workspace.getId(), memberId);
+        return ResponseEntity.ok(ApiResponse.created(id));
     }
 
     @GetMapping("/{workspace}/history")
