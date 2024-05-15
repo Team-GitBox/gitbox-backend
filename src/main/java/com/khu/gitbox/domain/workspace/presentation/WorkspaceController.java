@@ -4,7 +4,7 @@ import com.khu.gitbox.auth.provider.JwtTokenProvider;
 import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.action.ActionHistoryDto;
 import com.khu.gitbox.domain.action.ActionHistoryService;
-import com.khu.gitbox.domain.workspace.application.WorkspaceServiceImpl;
+import com.khu.gitbox.domain.workspace.application.WorkspaceService;
 import com.khu.gitbox.domain.workspace.entity.Workspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.AddMembers;
 import com.khu.gitbox.domain.workspace.presentation.dto.CreateWorkspace;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class WorkspaceController {
 
-    private final WorkspaceServiceImpl workspaceService;
+    private final WorkspaceService workspaceService;
     private final JwtTokenProvider jwtTokenProvider;
     private final ActionHistoryService actionHistoryService;
 
@@ -62,15 +62,14 @@ public class WorkspaceController {
         return ResponseEntity.ok(workspaceDetail); // 워크스페이스 정보 반환
     }
 
-    //워크스페이스 멤버 삭제 문제 있는듯 ?
     @DeleteMapping("/{workspaceId}/members")
     public ResponseEntity<?> deleteWorkspaceMembers(@PathVariable Long workspaceId,
-                                                    @Valid @RequestBody DeleteMembers deleteMembers, @RequestHeader("Cookie") String cookie) {
+                                                    @Valid @RequestBody DeleteMembers deleteMembersEmails) {
 
-        Long requestMemberId = SecurityContextUtil.getCurrentMemberId();
         Workspace workspace = workspaceService.findById(workspaceId);
+        Long requestOwnerId = SecurityContextUtil.getCurrentMemberId();
 
-        workspaceService.deleteMembers(deleteMembers.getDeleteMemberIds(), requestMemberId);
+        workspaceService.deleteMembers(deleteMembersEmails.getDeleteMemberEmails(), requestOwnerId);
         return ResponseEntity.ok().build();
     }
 

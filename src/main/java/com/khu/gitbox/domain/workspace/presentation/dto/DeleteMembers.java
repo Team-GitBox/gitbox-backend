@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteMembers {
-    private List<Long> deleteMemberIds;
+    private List<String> deleteMemberEmails;
 }
