@@ -9,7 +9,7 @@ public interface WorkspaceService {
     Workspace findById(Long name);
 
     //    WorkspaceMember findByEmail(String email);
-    void deleteWorkspaces(Long workspaceId, Long requestMemberId);
+    void deleteWorkspaces(Long workspaceId, Long requestOwner);
 
     void deleteMembers(List<Long> memberIds, Long requestMemberId);
 

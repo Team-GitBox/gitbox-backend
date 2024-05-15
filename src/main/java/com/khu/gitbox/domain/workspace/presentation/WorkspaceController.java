@@ -56,7 +56,6 @@ public class WorkspaceController {
                                                         @RequestHeader("Cookie") String cookie) {
 
         Long memberId = SecurityContextUtil.getCurrentMemberId();
-
         WorkspaceDetail workspaceDetail = workspaceService.findByMemberIdAndWorkspaceId(workspaceId,
                 memberId); // 서비스 호출
 
@@ -68,10 +67,10 @@ public class WorkspaceController {
     public ResponseEntity<?> deleteWorkspaceMembers(@PathVariable Long workspaceId,
                                                     @Valid @RequestBody DeleteMembers deleteMembers, @RequestHeader("Cookie") String cookie) {
 
-        Long memberId = SecurityContextUtil.getCurrentMemberId();
+        Long requestMemberId = SecurityContextUtil.getCurrentMemberId();
         Workspace workspace = workspaceService.findById(workspaceId);
 
-        workspaceService.deleteMembers(deleteMembers.getDeleteMemberIds(), memberId);
+        workspaceService.deleteMembers(deleteMembers.getDeleteMemberIds(), requestMemberId);
         return ResponseEntity.ok().build();
     }
 
@@ -80,10 +79,7 @@ public class WorkspaceController {
     public ResponseEntity<?> deleteWorkspace(@PathVariable Long workspaceId, @RequestHeader("Cookie") String cookie) {
 
         Long memberId = SecurityContextUtil.getCurrentMemberId();
-
-        // 워크스페이스 이름을 사용하여 워크스페이스 정보 조회
         Workspace workspace = workspaceService.findById(workspaceId);
-
 
         workspaceService.deleteWorkspaces(workspace.getId(), memberId);
         return ResponseEntity.ok().build();

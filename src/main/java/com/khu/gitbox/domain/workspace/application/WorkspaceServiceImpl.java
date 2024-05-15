@@ -42,7 +42,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         for (String email : request.getMemberEmails()) {
 
             Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
-                throw new CustomException(HttpStatus.NOT_FOUND, email + " 이 메일은 없습니당");
+                throw new CustomException(HttpStatus.NOT_FOUND, email + " 이 메일은 회원이 아닙니다.");
             });
 
             WorkspaceMember workspaceMember = WorkspaceMember.builder()
@@ -75,7 +75,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         for (String email : memberEmails) {
             // 이메일로 멤버 찾기
             Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
-                throw new CustomException(HttpStatus.NOT_FOUND, "잘못 입력했다.");
+                throw new CustomException(HttpStatus.NOT_FOUND, "이메일을 잘못 입력하셨습니다.");
             });
 
             // WorkspaceMember 객체 생성
@@ -93,15 +93,16 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     public Workspace findById(Long workspaceId) {
         // 워크스페이스 id로 검색 로직 구현
         return workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new EntityNotFoundException("Workspace not found with name: " + workspaceId));
+                .orElseThrow(() -> new EntityNotFoundException("이 워크스페이스는 없습니다."));
     }
 
     @Override
-    public void deleteWorkspaces(Long workspaceId, Long requestMemberId) {
-        if (!workspaceRepository.findById(workspaceId).isPresent()) {
-            throw new EntityNotFoundException("Workspace not found with name: " + workspaceId);
+    public void deleteWorkspaces(Long worspaceId, Long requestOwnerId) {
+        if (!workspaceRepository.existsById(requestOwnerId)) {
+            throw new CustomException(HttpStatus.FORBIDDEN, "해당 워크스페이스의 소유주가 아닙니다.");
         }
-        workspaceRepository.deleteById(workspaceId);
+
+        workspaceRepository.deleteById(worspaceId);
     }
 
     @Override
@@ -122,28 +123,27 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     public WorkspaceDetail findByMemberIdAndWorkspaceId(Long workspaceId, Long memberId) {
         // 워크스페이스 멤버 확인
         WorkspaceMember workspaceMember = workspaceMemberRepository.findByMemberIdAndWorkspaceId(memberId, workspaceId)
-                .orElseThrow(() -> new EntityNotFoundException("너 누구야 여기 워크스페이스 아니잖아"));
+                .orElseThrow(() -> new EntityNotFoundException("당신은 이 워크스페이스 사용자가 아닙니다."));
 
         // 워크스페이스 정보 가져오기
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new EntityNotFoundException("넌 누구냐"));
+                .orElseThrow(() -> new EntityNotFoundException("워크스페이스가 없습니다."));
 
         // 워크스페이스로부터 소유자 정보 가져오기
         OwnerInfo ownerInfo = memberRepository.findById(workspace.getOwnerId())
                 .map(member -> new OwnerInfo(member.getEmail(), member.getName()))
-                .orElseThrow(() -> new EntityNotFoundException("Owner not found with ID: " + workspace.getOwnerId()));
+                .orElseThrow(() -> new EntityNotFoundException("소유주가 없습니다."));
 
         // 워크스페이스 멤버들의 이메일 목록 가져오기
         List<MemberInfo> memberInfoList = workspaceMemberRepository.findByWorkspaceId(workspaceId).stream()
                 .map(WorkspaceMember::getMemberId)
                 .map(memberId2 -> memberRepository.findById(memberId)
                         .map(member -> new MemberInfo(member.getEmail(), member.getName()))
-                        .orElse(new MemberInfo("", "Unknown Member")))
+                        .orElse(new MemberInfo("", "뭔가 문제가 있습니다.")))
                 .collect(Collectors.toList());
 
         // WorkspaceDetail 객체 생성 및 반환
         return new WorkspaceDetail(workspace.getName(), ownerInfo, memberInfoList,
                 workspace.getMaxStorage(), workspace.getUsedStorage());
     }
-
 }
