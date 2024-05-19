@@ -1,5 +1,7 @@
 spring.profiles.default: dev
 ---
+server:
+  port: 1234
 
 spring:
   profiles:
@@ -37,3 +39,4 @@ cloud:
 logging:
   level:
     org.hibernate.SQL: TRACE
+
