@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.khu.gitbox.auth.provider.JwtTokenProvider;
 import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.member.application.MemberService;
 import com.khu.gitbox.domain.member.presentation.dto.MemberDto;
@@ -24,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 
 	private final MemberService memberService;
-	private final JwtTokenProvider jwtTokenProvider;
 
 	@PostMapping("/register")
 	public ApiResponse<Long> signUp(@Valid @RequestBody SignUpRequest request) {
