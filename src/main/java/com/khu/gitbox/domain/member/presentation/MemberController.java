@@ -1,6 +1,5 @@
 package com.khu.gitbox.domain.member.presentation;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -28,29 +27,29 @@ public class MemberController {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	@PostMapping("/register")
-	public ResponseEntity<ApiResponse<Long>> signUp(@Valid @RequestBody SignUpRequest request) {
+	public ApiResponse<Long> signUp(@Valid @RequestBody SignUpRequest request) {
 		Long id = memberService.signUp(request);
-		return ResponseEntity.ok(ApiResponse.created(id));
+		return ApiResponse.created(id);
 	}
 
 	@GetMapping(value = {"/my", "/my/info"})
-	public ResponseEntity<ApiResponse<MemberDto>> myInfo() {
+	public ApiResponse<MemberDto> myInfo() {
 		Long currentMemberId = SecurityContextUtil.getCurrentMemberId();
 		MemberDto memberDto = memberService.getMemberDetail(currentMemberId);
-		return ResponseEntity.ok(ApiResponse.ok(memberDto));
+		return ApiResponse.ok(memberDto);
 	}
 
 	@PatchMapping("/my/info")
-	public ResponseEntity<ApiResponse<Long>> editMember(@RequestBody MemberDto memberDto) {
+	public ApiResponse<Long> editMember(@RequestBody MemberDto memberDto) {
 		final Long currentMemberId = SecurityContextUtil.getCurrentMemberId();
 		Long responseId = memberService.editMember(memberDto, currentMemberId);
-		return ResponseEntity.ok(ApiResponse.ok(responseId));
+		return ApiResponse.ok(responseId);
 	}
 
 	@DeleteMapping("/my/info")
-	public ResponseEntity<ApiResponse<Void>> deleteMember() {
+	public ApiResponse<Void> deleteMember() {
 		final Long currentMemberId = SecurityContextUtil.getCurrentMemberId();
 		memberService.deleteMember(currentMemberId);
-		return ResponseEntity.ok(ApiResponse.delete(null));
+		return ApiResponse.delete(null);
 	}
 }

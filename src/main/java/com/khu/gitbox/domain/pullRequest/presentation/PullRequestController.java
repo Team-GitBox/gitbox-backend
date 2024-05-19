@@ -1,40 +1,47 @@
 package com.khu.gitbox.domain.pullRequest.presentation;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.khu.gitbox.auth.provider.JwtTokenProvider;
 import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.pullRequest.application.PullRequestService;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestCommentDto;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestDto;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{fileId}")
+@RequestMapping("/api/files/{fileId}")
 public class PullRequestController {
 
-    private final PullRequestService pullRequestService;
-    private final JwtTokenProvider jwtTokenProvider;
+	private final PullRequestService pullRequestService;
+	private final JwtTokenProvider jwtTokenProvider;
 
-    @GetMapping("/pr")
-    public ResponseEntity<ApiResponse<PullRequestDto>> infoPullRequest(@PathVariable Long fileId) {
-        PullRequestDto pullRequestDto = pullRequestService.infoPullRequest(fileId);
+	@GetMapping("/pr")
+	public ApiResponse<PullRequestDto> infoPullRequest(@PathVariable Long fileId) {
+		PullRequestDto pullRequestDto = pullRequestService.infoPullRequest(fileId);
 
-        return ResponseEntity.ok(ApiResponse.ok(pullRequestDto));
-    }
+		return ApiResponse.ok(pullRequestDto);
+	}
 
-    @PostMapping("/pr")
-    public ResponseEntity<ApiResponse<Boolean>> checkPullRequestComment(
-            @RequestHeader("Cookie") String cookie,
-            @RequestBody PullRequestCommentDto pullRequestCommentDto,
-            @PathVariable Long fileId) {
+	@PostMapping("/pr")
+	public ApiResponse<Boolean> checkPullRequestComment(
+		@RequestHeader("Cookie") String cookie,
+		@RequestBody PullRequestCommentDto pullRequestCommentDto,
+		@PathVariable Long fileId) {
 
-        Long id = jwtTokenProvider.getId(cookie.substring(12));
+		Long id = jwtTokenProvider.getId(cookie.substring(12));
 
-        pullRequestService.isApprovedPullRequest(pullRequestCommentDto, id, fileId);
+		pullRequestService.isApprovedPullRequest(pullRequestCommentDto, id, fileId);
 
-        return ResponseEntity.ok(ApiResponse.created(pullRequestCommentDto.getIsApproved()));
-    }
+		return ApiResponse.created(pullRequestCommentDto.getIsApproved());
+	}
 
 }

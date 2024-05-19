@@ -1,6 +1,5 @@
 package com.khu.gitbox.domain.file.presentation;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,35 +26,35 @@ public class FolderController {
 	private final FolderService folderService;
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<Long>> createFolder(
+	public ApiResponse<Long> createFolder(
 		@PathVariable Long workspaceId,
 		@Valid @RequestBody FolderCreateRequest request) {
 		Long folderId = folderService.createFolder(workspaceId, request);
-		return ResponseEntity.ok(ApiResponse.ok(folderId));
+		return ApiResponse.ok(folderId);
 	}
 
 	@GetMapping("/{folderId}")
-	public ResponseEntity<ApiResponse<FolderGetResponse>> getFolder(
+	public ApiResponse<FolderGetResponse> getFolder(
 		@PathVariable Long workspaceId,
 		@PathVariable Long folderId) {
 		FolderGetResponse folder = folderService.getFolder(workspaceId, folderId);
-		return ResponseEntity.ok(ApiResponse.ok(folder));
+		return ApiResponse.ok(folder);
 	}
 
 	@PatchMapping("/{folderId}")
-	public ResponseEntity<ApiResponse<FolderGetResponse>> updateFolder(
+	public ApiResponse<FolderGetResponse> updateFolder(
 		@PathVariable Long workspaceId,
 		@PathVariable Long folderId,
 		@Valid @RequestBody FolderUpdateRequest request) {
 		FolderGetResponse folder = folderService.updateFolder(workspaceId, folderId, request);
-		return ResponseEntity.ok(ApiResponse.ok(folder));
+		return ApiResponse.ok(folder);
 	}
 
 	@DeleteMapping("/{folderId}")
-	public ResponseEntity<ApiResponse<Void>> deleteFolder(
+	public ApiResponse<Void> deleteFolder(
 		@PathVariable Long workspaceId,
 		@PathVariable Long folderId) {
 		folderService.deleteFolder(workspaceId, folderId);
-		return ResponseEntity.ok(ApiResponse.ok(null));
+		return ApiResponse.ok(null);
 	}
 }
