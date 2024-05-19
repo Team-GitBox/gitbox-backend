@@ -1,5 +1,7 @@
 package com.khu.gitbox.domain.file.application;
 
+import static com.khu.gitbox.util.SecurityContextUtil.*;
+
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -16,14 +18,13 @@ import com.khu.gitbox.domain.file.presentation.dto.request.FileCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileUpdateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.PullRequestCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
+import com.khu.gitbox.domain.member.application.MemberService;
 import com.khu.gitbox.domain.member.entity.Member;
-import com.khu.gitbox.domain.member.infrastructure.MemberRepository;
 import com.khu.gitbox.domain.pullRequest.entity.PullRequest;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestRepository;
+import com.khu.gitbox.domain.workspace.application.WorkspaceService;
 import com.khu.gitbox.domain.workspace.entity.Workspace;
-import com.khu.gitbox.domain.workspace.infrastructure.WorkspaceRepository;
 import com.khu.gitbox.s3.S3Service;
-import com.khu.gitbox.util.SecurityContextUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,15 +35,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class FileService {
 	private final FileRepository fileRepository;
-	private final MemberRepository memberRepository;
-	private final WorkspaceRepository workspaceRepository;
 	private final PullRequestRepository pullRequestRepository;
+	private final MemberService memberService;
+	private final WorkspaceService workspaceService;
 	private final S3Service s3Service;
 
 	// 파일 업로드
 	public FileGetResponse uploadFile(FileCreateRequest request, MultipartFile multipartFile) {
-		final Member member = getCurrentMember();
-		final Workspace workspace = getAvailableWorkspace(request.workspaceId());
+		final Member member = memberService.findMemberById(getCurrentMemberId());
+		final Workspace workspace = workspaceService.findWorkspaceById(request.workspaceId());
 
 		final String fileName = multipartFile.getOriginalFilename();
 		final FileType fileType = FileType.from(getExtension(fileName));
@@ -75,8 +76,8 @@ public class FileService {
 		PullRequestCreateRequest request,
 		MultipartFile multipartFile) {
 		// 부모 파일 정보 가져오기
-		final Member member = getCurrentMember();
-		final File parentFile = getAvailableFile(parentFileId);
+		final Member member = memberService.findMemberById(getCurrentMemberId());
+		final File parentFile = findFileById(parentFileId);
 
 		// 부모 파일 업데이트 가능 여부 확인
 		validateParentFileForUpdate(parentFileId, parentFile);
@@ -111,7 +112,7 @@ public class FileService {
 		pullRequestRepository.save(pullRequest);
 
 		// 워크스페이스 용량 업데이트
-		final Workspace workspace = getAvailableWorkspace(parentFile.getWorkspaceId());
+		final Workspace workspace = workspaceService.findWorkspaceById(parentFile.getWorkspaceId());
 		workspace.increaseUsedStorage(savedFile.getSize());
 
 		return FileGetResponse.of(savedFile);
@@ -119,12 +120,12 @@ public class FileService {
 
 	// 파일 조회
 	public FileGetResponse getFileInfo(Long fileId) {
-		return FileGetResponse.of(getAvailableFile(fileId));
+		return FileGetResponse.of(findFileById(fileId));
 	}
 
 	// 파일 트리 조회
 	public List<FileGetResponse> getFileTree(Long fileId) {
-		final File file = getAvailableFile(fileId);
+		final File file = findFileById(fileId);
 		return fileRepository.findAllByRootFileId(file.getRootFileId())
 			.stream()
 			.map(FileGetResponse::of).toList();
@@ -132,37 +133,26 @@ public class FileService {
 
 	// 파일 업데이트 (이름 수정)
 	public void updateFile(Long fileId, FileUpdateRequest request) {
-		final File file = getAvailableFile(fileId);
+		final File file = findFileById(fileId);
 		file.updateFileName(request.name());
 	}
 
 	// 파일 삭제
 	public void deleteFile(Long fileId) {
-		final File file = getAvailableFile(fileId);
+		final File file = findFileById(fileId);
 		file.delete();
 	}
 
 	// 파일 트리 삭제
 	public void deleteFileTree(Long fileId) {
-		final File file = getAvailableFile(fileId);
+		final File file = findFileById(fileId);
 		fileRepository.findAllByRootFileId(file.getRootFileId())
 			.forEach(File::delete);
 	}
 
-	private Member getCurrentMember() {
-		final Long memberId = SecurityContextUtil.getCurrentMemberId();
-		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
-	}
-
-	private File getAvailableFile(Long fileId) {
+	private File findFileById(Long fileId) {
 		return fileRepository.findById(fileId)
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
-	}
-
-	private Workspace getAvailableWorkspace(Long workspaceId) {
-		return workspaceRepository.findById(workspaceId)
-			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."));
 	}
 
 	private String getExtension(String fileName) {
