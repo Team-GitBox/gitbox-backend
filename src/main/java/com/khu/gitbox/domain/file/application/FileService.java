@@ -13,6 +13,7 @@ import com.khu.gitbox.common.exception.CustomException;
 import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
+import com.khu.gitbox.domain.file.entity.Folder;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileUpdateRequest;
@@ -38,13 +39,14 @@ public class FileService {
 	private final PullRequestRepository pullRequestRepository;
 	private final MemberService memberService;
 	private final WorkspaceService workspaceService;
+	private final FolderService folderService;
 	private final S3Service s3Service;
 
 	// 파일 업로드
 	public FileGetResponse uploadFile(FileCreateRequest request, MultipartFile multipartFile) {
 		final Member member = memberService.findMemberById(getCurrentMemberId());
 		final Workspace workspace = workspaceService.findWorkspaceById(request.workspaceId());
-
+		final Folder folder = folderService.findFolderById(request.workspaceId(), request.folderId());
 		final String fileName = multipartFile.getOriginalFilename();
 		final FileType fileType = FileType.from(getExtension(fileName));
 
@@ -58,7 +60,7 @@ public class FileService {
 			.isLatest(true)
 			.writerId(member.getId())
 			.workspaceId(workspace.getId())
-			.folderId(request.folderId())
+			.folderId(folder.getId())
 			.rootFileId(null)
 			.parentFileId(null)
 			.build();
