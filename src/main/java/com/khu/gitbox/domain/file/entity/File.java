@@ -2,6 +2,7 @@ package com.khu.gitbox.domain.file.entity;
 
 import org.springframework.http.HttpStatus;
 
+import com.khu.gitbox.common.BaseEntity;
 import com.khu.gitbox.common.exception.CustomException;
 
 import jakarta.persistence.Column;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "file")
-public class File {
+public class File extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

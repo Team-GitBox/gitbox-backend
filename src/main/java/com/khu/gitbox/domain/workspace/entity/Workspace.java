@@ -2,6 +2,7 @@ package com.khu.gitbox.domain.workspace.entity;
 
 import org.springframework.http.HttpStatus;
 
+import com.khu.gitbox.common.BaseEntity;
 import com.khu.gitbox.common.exception.CustomException;
 
 import jakarta.persistence.Column;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "workspace")
-public class Workspace {
+public class Workspace extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
