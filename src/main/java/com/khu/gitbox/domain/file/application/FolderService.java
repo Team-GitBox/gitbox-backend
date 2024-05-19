@@ -26,8 +26,8 @@ public class FolderService {
 
 	public Long createFolder(Long workspaceId, FolderCreateRequest request) {
 		validateWorkspace(workspaceId);
+		validateParentFolder(workspaceId, request.parentFolderId());
 
-		// TODO: 루트폴더를 워크스페이스 생성 시 만들어야할 것 같음
 		final Folder newFolder = Folder.builder()
 			.name(request.name())
 			.parentFolderId(request.parentFolderId())
@@ -63,5 +63,10 @@ public class FolderService {
 	private void validateWorkspace(Long workspaceId) {
 		workspaceRepository.findById(workspaceId)
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."));
+	}
+
+	private void validateParentFolder(Long workspaceId, Long parentFolderId) {
+		folderRepository.findByIdAndWorkspaceId(parentFolderId, workspaceId)
+			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "상위 폴더를 찾을 수 없습니다."));
 	}
 }
