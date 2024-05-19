@@ -1,5 +1,7 @@
 package com.khu.gitbox.domain.file.presentation.dto.response;
 
+import java.time.LocalDateTime;
+
 import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
@@ -17,7 +19,9 @@ public record FileGetResponse(
 	Long workspaceId,
 	Long folderId,
 	Long parentFileId,
-	Long rootFileId
+	Long rootFileId,
+	LocalDateTime createdAt,
+	LocalDateTime updatedAt
 ) {
 	public static FileGetResponse of(File file) {
 		return new FileGetResponse(
@@ -33,7 +37,9 @@ public record FileGetResponse(
 			file.getWorkspaceId(),
 			file.getFolderId(),
 			file.getParentFileId(),
-			file.getRootFileId()
+			file.getRootFileId(),
+			file.getCreatedAt(),
+			file.getUpdatedAt()
 		);
 	}
 }

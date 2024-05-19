@@ -1,5 +1,6 @@
 package com.khu.gitbox.domain.file.presentation.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.khu.gitbox.domain.file.entity.Folder;
@@ -9,6 +10,8 @@ public record FolderGetResponse(
 	String name,
 	Long parentFolderId,
 	Long workspaceId,
+	LocalDateTime createdAt,
+	LocalDateTime updatedAt,
 	List<FileGetResponse> files
 ) {
 	public static FolderGetResponse of(Folder folder, List<FileGetResponse> files) {
@@ -17,6 +20,8 @@ public record FolderGetResponse(
 			folder.getName(),
 			folder.getParentFolderId(),
 			folder.getWorkspaceId(),
+			folder.getCreatedAt(),
+			folder.getUpdatedAt(),
 			files
 		);
 	}
