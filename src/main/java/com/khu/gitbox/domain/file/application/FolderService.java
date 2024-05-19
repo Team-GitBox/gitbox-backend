@@ -57,7 +57,7 @@ public class FolderService {
 
 	private Folder getAvailableFolder(Long workspaceId, Long folderId) {
 		return folderRepository.findByIdAndWorkspaceId(folderId, workspaceId)
-			.orElseThrow(() -> new IllegalArgumentException("폴더를 찾을 수 없습니다."));
+			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "폴더를 찾을 수 없습니다."));
 	}
 
 	private void validateWorkspace(Long workspaceId) {
