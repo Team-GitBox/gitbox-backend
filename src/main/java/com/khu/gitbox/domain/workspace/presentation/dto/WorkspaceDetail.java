@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 
 public class WorkspaceDetail {
-    private Long workspaceId;
     private String workspaceName; // 워크스페이스 이름
     private OwnerInfo ownerInfo;
     private List<MemberInfo> memberInfo;
