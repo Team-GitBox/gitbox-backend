@@ -36,12 +36,15 @@ public class Workspace {
 	@Column(name = "max_storage", nullable = false)
 	private Long maxStorage;
 
+	@Column(name = "root_folder_id")
+	private Long rootFolderId;
+
 	@Builder
-	public Workspace(String name, Long ownerId, Long maxStorage, Long usedStorage) {
+	public Workspace(String name, Long ownerId, Long maxStorage) {
 		this.name = name;
 		this.ownerId = ownerId;
 		this.maxStorage = maxStorage;
-		this.usedStorage = usedStorage;
+		this.usedStorage = 0L;
 	}
 
 	//용량 증가
@@ -58,5 +61,9 @@ public class Workspace {
 			throw new CustomException(HttpStatus.BAD_REQUEST, "용량은 0보다 작을 수 없습니다.");
 		}
 		this.usedStorage -= size;
+	}
+
+	public void updateRootFolderId(Long folderId) {
+		this.rootFolderId = folderId;
 	}
 }

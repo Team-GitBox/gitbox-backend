@@ -1,11 +1,11 @@
 package com.khu.gitbox.domain.workspace.presentation.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -13,9 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 
 public class WorkspaceDetail {
-    private String workspaceName; // 워크스페이스 이름
-    private OwnerInfo ownerInfo;
-    private List<MemberInfo> memberInfo;
-    private Long maxStorage;
-    private Long usedStorage;
+	private String workspaceName;
+	private Long rootFolderId;
+	private OwnerInfo ownerInfo;
+	private List<MemberInfo> memberInfo;
+	private Long maxStorage;
+	private Long usedStorage;
 }
