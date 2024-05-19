@@ -2,14 +2,14 @@ INSERT INTO gitbox.member (id, moddate, regdate, email, name, password, profile_
 VALUES (1, '2024-05-19 15:35:37.461435', '2024-05-19 15:35:37.461435', 'test@naver.com', 'test',
         '$2a$10$9Hg6Nuw/TXe39c2WsgTi7OpFcstFKB7RoVqXlqnRXaMbDqBrqDAGa', null, 'USER');
 
-INSERT INTO gitbox.workspace (id, max_storage, owner_id, used_storage, name)
-VALUES (1, 1000000000, 1, 916052, 'workspace1');
+INSERT INTO gitbox.workspace (id, max_storage, owner_id, used_storage, name, root_folder_id)
+VALUES (1, 1000000000, 1, 916052, 'workspace1', 1);
 
 INSERT INTO gitbox.workspace_member (id, member_id, workspace_id)
 VALUES (1, 1, 1);
 
 INSERT INTO gitbox.folder (id, parent_folder_id, workspace_id, name)
-VALUES (1, 0, 1, 'home');
+VALUES (1, null, 1, 'home');
 
 INSERT INTO gitbox.file (is_latest, folder_id, id, parent_file_id, root_file_id, size, version, workspace_id, writer_id,
                          name, url, status, type)
