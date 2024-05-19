@@ -16,4 +16,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	@Query("SELECT f FROM File f WHERE f.rootFileId = :rootFileId ORDER BY f.version DESC")
 	List<File> findAllByRootFileId(Long rootFileId);
+
+	@Query("SELECT f FROM File f WHERE f.folderId = :folderId AND f.isLatest = true ORDER BY f.name ASC")
+	List<File> findAllByFolderId(Long folderId);
 }

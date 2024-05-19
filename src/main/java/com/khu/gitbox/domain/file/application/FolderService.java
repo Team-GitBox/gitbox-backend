@@ -1,5 +1,7 @@
 package com.khu.gitbox.domain.file.application;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import com.khu.gitbox.domain.file.infrastructure.FileRepository;
 import com.khu.gitbox.domain.file.infrastructure.FolderRepository;
 import com.khu.gitbox.domain.file.presentation.dto.request.FolderCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FolderUpdateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
 import com.khu.gitbox.domain.file.presentation.dto.response.FolderGetResponse;
 import com.khu.gitbox.domain.workspace.application.WorkspaceService;
 import com.khu.gitbox.domain.workspace.entity.Workspace;
@@ -39,13 +42,15 @@ public class FolderService {
 	@Transactional(readOnly = true)
 	public FolderGetResponse getFolder(Long workspaceId, Long folderId) {
 		final Folder folder = findFolderById(workspaceId, folderId);
-		return FolderGetResponse.of(folder);
+		final List<FileGetResponse> files = getFilesInFolder(folderId);
+		return FolderGetResponse.of(folder, files);
 	}
 
 	public FolderGetResponse updateFolder(Long workspaceId, Long folderId, FolderUpdateRequest request) {
 		final Folder folder = findFolderById(workspaceId, folderId);
 		folder.updateFolder(request.name(), request.parentFolderId());
-		return FolderGetResponse.of(folder);
+		final List<FileGetResponse> files = getFilesInFolder(folderId);
+		return FolderGetResponse.of(folder, files);
 	}
 
 	public void deleteFolder(Long workspaceId, Long folderId) {
@@ -59,8 +64,16 @@ public class FolderService {
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "폴더를 찾을 수 없습니다."));
 	}
 
-	public void validateParentFolder(Long workspaceId, Long parentFolderId) {
+	private void validateParentFolder(Long workspaceId, Long parentFolderId) {
 		folderRepository.findByIdAndWorkspaceId(parentFolderId, workspaceId)
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "상위 폴더를 찾을 수 없습니다."));
 	}
+
+	private List<FileGetResponse> getFilesInFolder(Long folderId) {
+		return fileRepository.findAllByFolderId(folderId)
+			.stream()
+			.map(FileGetResponse::of)
+			.toList();
+	}
+
 }
