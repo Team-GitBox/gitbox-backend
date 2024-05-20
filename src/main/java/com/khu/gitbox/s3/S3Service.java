@@ -2,6 +2,7 @@ package com.khu.gitbox.s3;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class S3Service {
 
 	public String uploadFile(MultipartFile multipartFile) {
 		String bucketName = s3Config.getBucket();
-		String fileName = multipartFile.getOriginalFilename(); // 파일 이름을 그대로 사용
+		String fileName = multipartFile.getOriginalFilename() + "_" + UUID.randomUUID().toString().substring(0, 5);
 
 		try {
 			// MultipartFile로부터 InputStream 가져오기
