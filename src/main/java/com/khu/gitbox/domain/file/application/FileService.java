@@ -49,7 +49,8 @@ public class FileService {
 		final Folder folder = folderService.findFolderById(request.workspaceId(), request.folderId());
 		final String fileName = multipartFile.getOriginalFilename();
 		final FileType fileType = FileType.from(getExtension(fileName));
-
+		validateFileName(folder.getId(), fileName);
+		
 		final File file = File.builder()
 			.name(fileName)
 			.size(multipartFile.getSize())
@@ -160,6 +161,14 @@ public class FileService {
 	private String getExtension(String fileName) {
 		log.info("fileName: {}", fileName);
 		return fileName.substring(fileName.lastIndexOf(".") + 1);
+	}
+
+	private void validateFileName(Long folderId, String fileName) {
+		// 같은 이름의 파일이 이미 존재하는지 확인
+		fileRepository.findByFolderIdAndName(folderId, fileName)
+			.ifPresent(file -> {
+				throw new CustomException(HttpStatus.BAD_REQUEST, "같은 이름의 파일이 이미 존재합니다.");
+			});
 	}
 
 	private void validateParentFileForUpdate(Long parentFileId, File parentFile) {

@@ -30,7 +30,7 @@ public class FolderService {
 
 	public Long createFolder(Long workspaceId, FolderCreateRequest request) {
 		final Workspace workspace = workspaceService.findWorkspaceById(workspaceId);
-		validateParentFolder(workspaceId, request.parentFolderId());
+		validateFolderCreation(workspaceId, request.parentFolderId(), request.name());
 
 		final Folder newFolder = Folder.builder()
 			.name(request.name())
@@ -67,9 +67,13 @@ public class FolderService {
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "폴더를 찾을 수 없습니다."));
 	}
 
-	private void validateParentFolder(Long workspaceId, Long parentFolderId) {
+	private void validateFolderCreation(Long workspaceId, Long parentFolderId, String folderName) {
 		folderRepository.findByIdAndWorkspaceId(parentFolderId, workspaceId)
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "상위 폴더를 찾을 수 없습니다."));
+		folderRepository.findByParentFolderIdAndName(parentFolderId, folderName)
+			.ifPresent(folder -> {
+				throw new CustomException(HttpStatus.BAD_REQUEST, "이미 존재하는 폴더 이름입니다 : " + folderName);
+			});
 	}
 
 	private List<FileGetResponse> getFilesInFolder(Long folderId) {

@@ -11,4 +11,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 	Optional<Folder> findByIdAndWorkspaceId(Long folderId, Long workspaceId);
 
 	List<Folder> findAllByParentFolderId(Long parentFolderId);
+
+	Optional<Folder> findByParentFolderIdAndName(Long parentFolderId, String folderName);
 }
