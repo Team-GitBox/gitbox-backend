@@ -23,12 +23,12 @@ import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/files")
 @RequiredArgsConstructor
 public class FileController {
 	private final FileService fileService;
 
-	@PostMapping(value = "/files", consumes = "multipart/form-data")
+	@PostMapping(value = "", consumes = "multipart/form-data")
 	public ApiResponse<FileGetResponse> uploadFile(
 		@RequestPart(value = "request") FileCreateRequest request,
 		@RequestPart(value = "file") MultipartFile multipartFile) {
@@ -36,7 +36,7 @@ public class FileController {
 		return ApiResponse.ok(response);
 	}
 
-	@PostMapping(value = "/files/{parentFileId}", consumes = "multipart/form-data")
+	@PostMapping(value = "/{parentFileId}", consumes = "multipart/form-data")
 	public ApiResponse<FileGetResponse> uploadNewVersionFile(
 		@PathVariable Long parentFileId,
 		@RequestPart(value = "request") PullRequestCreateRequest request,
@@ -45,19 +45,19 @@ public class FileController {
 		return ApiResponse.ok(response);
 	}
 
-	@GetMapping(value = "/files/{fileId}")
+	@GetMapping(value = "/{fileId}")
 	public ApiResponse<FileGetResponse> getFile(@PathVariable Long fileId) {
 		final FileGetResponse response = fileService.getFileInfo(fileId);
 		return ApiResponse.ok(response);
 	}
 
-	@GetMapping(value = "/files/{fileId}/tree")
+	@GetMapping(value = "/{fileId}/tree")
 	public ApiResponse<List<FileGetResponse>> getFileTree(@PathVariable Long fileId) {
 		final List<FileGetResponse> fileTree = fileService.getFileTree(fileId);
 		return ApiResponse.ok(fileTree);
 	}
 
-	@PatchMapping(value = "/files/{fileId}")
+	@PatchMapping(value = "/{fileId}")
 	public ApiResponse<Void> getFileTree(
 		@PathVariable Long fileId,
 		@RequestBody FileUpdateRequest request) {
@@ -65,7 +65,7 @@ public class FileController {
 		return ApiResponse.ok();
 	}
 
-	@DeleteMapping(value = "/files/{fileId}")
+	@DeleteMapping(value = "/{fileId}")
 	public ApiResponse<Void> deleteFile(@PathVariable Long fileId) {
 		fileService.deleteFile(fileId);
 		return ApiResponse.ok();

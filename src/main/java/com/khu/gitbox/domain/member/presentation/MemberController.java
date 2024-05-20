@@ -30,7 +30,7 @@ public class MemberController {
 		return ApiResponse.created(id);
 	}
 
-	@GetMapping(value = {"/my", "/my/info"})
+	@GetMapping(value = {"/my/info"})
 	public ApiResponse<MemberDto> myInfo() {
 		Long currentMemberId = SecurityContextUtil.getCurrentMemberId();
 		MemberDto memberDto = memberService.getMemberDetail(currentMemberId);
