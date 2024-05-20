@@ -13,7 +13,7 @@ import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.file.application.FolderService;
 import com.khu.gitbox.domain.file.presentation.dto.request.FolderCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FolderUpdateRequest;
-import com.khu.gitbox.domain.file.presentation.dto.response.FolderGetResponse;
+import com.khu.gitbox.domain.file.presentation.dto.response.FolderDetailGetResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,19 +34,19 @@ public class FolderController {
 	}
 
 	@GetMapping("/{folderId}")
-	public ApiResponse<FolderGetResponse> getFolder(
+	public ApiResponse<FolderDetailGetResponse> getFolder(
 		@PathVariable Long workspaceId,
 		@PathVariable Long folderId) {
-		FolderGetResponse folder = folderService.getFolder(workspaceId, folderId);
+		FolderDetailGetResponse folder = folderService.getFolder(workspaceId, folderId);
 		return ApiResponse.ok(folder);
 	}
 
 	@PatchMapping("/{folderId}")
-	public ApiResponse<FolderGetResponse> updateFolder(
+	public ApiResponse<FolderDetailGetResponse> updateFolder(
 		@PathVariable Long workspaceId,
 		@PathVariable Long folderId,
 		@Valid @RequestBody FolderUpdateRequest request) {
-		FolderGetResponse folder = folderService.updateFolder(workspaceId, folderId, request);
+		FolderDetailGetResponse folder = folderService.updateFolder(workspaceId, folderId, request);
 		return ApiResponse.ok(folder);
 	}
 

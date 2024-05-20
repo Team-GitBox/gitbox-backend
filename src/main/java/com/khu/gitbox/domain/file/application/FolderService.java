@@ -13,7 +13,8 @@ import com.khu.gitbox.domain.file.infrastructure.FolderRepository;
 import com.khu.gitbox.domain.file.presentation.dto.request.FolderCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FolderUpdateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
-import com.khu.gitbox.domain.file.presentation.dto.response.FolderGetResponse;
+import com.khu.gitbox.domain.file.presentation.dto.response.FolderDetailGetResponse;
+import com.khu.gitbox.domain.file.presentation.dto.response.FolderSummaryGetResponse;
 import com.khu.gitbox.domain.workspace.application.WorkspaceService;
 import com.khu.gitbox.domain.workspace.entity.Workspace;
 
@@ -40,17 +41,19 @@ public class FolderService {
 	}
 
 	@Transactional(readOnly = true)
-	public FolderGetResponse getFolder(Long workspaceId, Long folderId) {
+	public FolderDetailGetResponse getFolder(Long workspaceId, Long folderId) {
 		final Folder folder = findFolderById(workspaceId, folderId);
 		final List<FileGetResponse> files = getFilesInFolder(folderId);
-		return FolderGetResponse.of(folder, files);
+		final List<FolderSummaryGetResponse> folders = getFoldersInFolder(folderId);
+		return FolderDetailGetResponse.of(folder, folders, files);
 	}
 
-	public FolderGetResponse updateFolder(Long workspaceId, Long folderId, FolderUpdateRequest request) {
+	public FolderDetailGetResponse updateFolder(Long workspaceId, Long folderId, FolderUpdateRequest request) {
 		final Folder folder = findFolderById(workspaceId, folderId);
 		folder.updateFolder(request.name(), request.parentFolderId());
 		final List<FileGetResponse> files = getFilesInFolder(folderId);
-		return FolderGetResponse.of(folder, files);
+		final List<FolderSummaryGetResponse> folders = getFoldersInFolder(folderId);
+		return FolderDetailGetResponse.of(folder, folders, files);
 	}
 
 	public void deleteFolder(Long workspaceId, Long folderId) {
@@ -73,6 +76,13 @@ public class FolderService {
 		return fileRepository.findAllByFolderId(folderId)
 			.stream()
 			.map(FileGetResponse::of)
+			.toList();
+	}
+
+	private List<FolderSummaryGetResponse> getFoldersInFolder(Long folderId) {
+		return folderRepository.findAllByParentFolderId(folderId)
+			.stream()
+			.map(FolderSummaryGetResponse::of)
 			.toList();
 	}
 

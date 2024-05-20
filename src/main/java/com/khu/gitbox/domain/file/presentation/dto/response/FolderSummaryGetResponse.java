@@ -1,28 +1,25 @@
 package com.khu.gitbox.domain.file.presentation.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.khu.gitbox.domain.file.entity.Folder;
 
-public record FolderGetResponse(
+public record FolderSummaryGetResponse(
 	Long id,
 	String name,
 	Long parentFolderId,
 	Long workspaceId,
 	LocalDateTime createdAt,
-	LocalDateTime updatedAt,
-	List<FileGetResponse> files
+	LocalDateTime updatedAt
 ) {
-	public static FolderGetResponse of(Folder folder, List<FileGetResponse> files) {
-		return new FolderGetResponse(
+	public static FolderSummaryGetResponse of(Folder folder) {
+		return new FolderSummaryGetResponse(
 			folder.getId(),
 			folder.getName(),
 			folder.getParentFolderId(),
 			folder.getWorkspaceId(),
 			folder.getCreatedAt(),
-			folder.getUpdatedAt(),
-			files
+			folder.getUpdatedAt()
 		);
 	}
 }
