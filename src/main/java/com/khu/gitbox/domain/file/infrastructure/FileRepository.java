@@ -19,4 +19,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	@Query("SELECT f FROM File f WHERE f.folderId = :folderId AND f.isLatest = true ORDER BY f.name ASC")
 	List<File> findAllByFolderId(Long folderId);
+
+	List<File> findAllByWorkspaceId(Long workspaceId);
 }

@@ -85,5 +85,4 @@ public class FolderService {
 			.map(FolderSummaryGetResponse::of)
 			.toList();
 	}
-
 }

@@ -1,7 +1,9 @@
 package com.khu.gitbox.domain.workspace.application;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.khu.gitbox.common.exception.CustomException;
 import com.khu.gitbox.domain.file.entity.Folder;
+import com.khu.gitbox.domain.file.infrastructure.FileRepository;
 import com.khu.gitbox.domain.file.infrastructure.FolderRepository;
 import com.khu.gitbox.domain.member.application.MemberService;
 import com.khu.gitbox.domain.member.entity.Member;
@@ -35,6 +38,7 @@ public class WorkspaceService {
 	private final WorkspaceRepository workspaceRepository;
 	private final WorkspaceMemberRepository workspaceMemberRepository;
 	private final FolderRepository folderRepository;
+	private final FileRepository fileRepository;
 	private final MemberService memberService;
 
 	public Long createWorkspace(CreateWorkspace request, Long ownerId) {
@@ -111,6 +115,8 @@ public class WorkspaceService {
 				return new MemberInfo(member.getEmail(), member.getName());
 			}).toList();
 
+		Map<String, Long> usedStorageByFileType = getUsedStorageByFileType(workspaceId);
+
 		// WorkspaceDetail 객체 생성 및 반환
 		return new WorkspaceDetail(
 			workspace.getName(),
@@ -118,7 +124,25 @@ public class WorkspaceService {
 			ownerInfo,
 			memberInfoList,
 			workspace.getMaxStorage(),
-			workspace.getUsedStorage());
+			workspace.getUsedStorage(),
+			usedStorageByFileType);
+	}
+
+	public Workspace findWorkspaceById(Long workspaceId) {
+		// 워크스페이스 id로 검색 로직 구현
+		return workspaceRepository.findById(workspaceId)
+			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."));
+	}
+
+	private void validateWorkspaceOwner(Workspace workspace, Long memberId) {
+		if (!workspace.getOwnerId().equals(memberId)) {
+			throw new CustomException(HttpStatus.FORBIDDEN, "해당 워크스페이스의 소유주가 아닙니다.");
+		}
+	}
+
+	private void validateWorkspaceMember(Workspace workspace, Long memberId) {
+		workspaceMemberRepository.findByWorkspaceIdAndMemberId(workspace.getId(), memberId)
+			.orElseThrow(() -> new CustomException(HttpStatus.FORBIDDEN, "해당 워크스페이스의 멤버가 아닙니다."));
 	}
 
 	private List<Long> saveWorkspaceMembers(Long workspaceId, List<String> memberEmails) {
@@ -147,20 +171,14 @@ public class WorkspaceService {
 		return returnMemberIds;
 	}
 
-	public Workspace findWorkspaceById(Long workspaceId) {
-		// 워크스페이스 id로 검색 로직 구현
-		return workspaceRepository.findById(workspaceId)
-			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."));
-	}
-
-	private void validateWorkspaceOwner(Workspace workspace, Long memberId) {
-		if (!workspace.getOwnerId().equals(memberId)) {
-			throw new CustomException(HttpStatus.FORBIDDEN, "해당 워크스페이스의 소유주가 아닙니다.");
-		}
-	}
-
-	private void validateWorkspaceMember(Workspace workspace, Long memberId) {
-		workspaceMemberRepository.findByWorkspaceIdAndMemberId(workspace.getId(), memberId)
-			.orElseThrow(() -> new CustomException(HttpStatus.FORBIDDEN, "해당 워크스페이스의 멤버가 아닙니다."));
+	private Map<String, Long> getUsedStorageByFileType(Long workspaceId) {
+		Map<String, Long> usedStorage = new HashMap<>();
+		fileRepository.findAllByWorkspaceId(workspaceId)
+			.forEach(file -> {
+				String fileType = file.getType().name();
+				Long size = file.getSize();
+				usedStorage.put(fileType, usedStorage.getOrDefault(fileType, 0L) + size);
+			});
+		return usedStorage;
 	}
 }
