@@ -59,7 +59,7 @@ public class WorkspaceController {
 		List<Long> memberIds = workspaceService.addMembersToWorkspace(
 			workspaceId,
 			requestOwnerId,
-			addMembers.getAddMemberEmail());
+			addMembers.getMemberEmails());
 		return ApiResponse.created(memberIds);
 	}
 

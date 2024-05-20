@@ -106,8 +106,8 @@ public class FileService {
 
 		// PR 생성
 		final PullRequest pullRequest = PullRequest.builder()
-			.title(request.title())
-			.message(request.message())
+			.title(request.pullRequestTitle())
+			.message(request.pullRequestMessage())
 			.writerId(member.getId())
 			.fileId(savedFile.getId())
 			.build();
