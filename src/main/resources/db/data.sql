@@ -1,19 +1,37 @@
-INSERT INTO gitbox.member (id, moddate, regdate, email, name, password, profile_image, role)
-VALUES (1, '2024-05-19 15:35:37.461435', '2024-05-19 15:35:37.461435', 'test@naver.com', 'test',
-        '$2a$10$9Hg6Nuw/TXe39c2WsgTi7OpFcstFKB7RoVqXlqnRXaMbDqBrqDAGa', null, 'USER');
+INSERT INTO gitbox.member (created_at, id, updated_at, email, name, password, profile_image, role)
+VALUES ('2024-05-20 09:27:28.554885', 1, '2024-05-20 09:27:28.554885', 'string@naver.com', 'string',
+        '$2a$10$HRBOgQzOVHK.X/BPOj9lDuEowNiPFbrZbqYponQTEP70/5f3YiC.6', null, 'USER');
+INSERT INTO gitbox.member (created_at, id, updated_at, email, name, password, profile_image, role)
+VALUES ('2024-05-20 09:28:34.696628', 2, '2024-05-20 09:28:34.696628', 'string1@naver.com', 'string1',
+        '$2a$10$xKErMpZhE/9dpXDkGn2Q.OYjpWKJHrDleia.CzPl4ChnigVSS0JOy', null, 'USER');
 
-INSERT INTO gitbox.workspace (id, max_storage, owner_id, used_storage, name, root_folder_id)
-VALUES (1, 1000000000, 1, 916052, 'workspace1', 1);
-
+INSERT INTO gitbox.workspace (created_at, id, max_storage, owner_id, root_folder_id, updated_at, used_storage, name)
+VALUES ('2024-05-20 09:28:06.306780', 1, 1000000000, 1, 1, '2024-05-20 09:46:39.482480', 12252, 'workspace1');
 INSERT INTO gitbox.workspace_member (id, member_id, workspace_id)
 VALUES (1, 1, 1);
+INSERT INTO gitbox.workspace_member (id, member_id, workspace_id)
+VALUES (3, 2, 1);
 
-INSERT INTO gitbox.folder (id, parent_folder_id, workspace_id, name)
-VALUES (1, null, 1, 'home');
+INSERT INTO gitbox.folder (created_at, id, parent_folder_id, updated_at, workspace_id, name)
+VALUES ('2024-05-20 09:28:06.323471', 1, null, '2024-05-20 09:28:06.323471', 1, 'home');
+INSERT INTO gitbox.folder (created_at, id, parent_folder_id, updated_at, workspace_id, name)
+VALUES ('2024-05-20 09:31:37.473576', 2, 1, '2024-05-20 09:34:10.245099', 1, 'picture');
 
-INSERT INTO gitbox.file (is_latest, folder_id, id, parent_file_id, root_file_id, size, version, workspace_id, writer_id,
-                         name, url, status, type)
-VALUES (true, 1, 1, null, 1, 916052, 1, 1, 1, '9주차_AIoT네트워크.pdf',
-        'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/9%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1_AIoT%E1%84%82%E1%85%A6%E1%84%90%E1%85%B3%E1%84%8B%E1%85%AF%E1%84%8F%E1%85%B3.pdf',
-        'APPROVED', 'PDF');
+INSERT INTO gitbox.file (is_latest, created_at, folder_id, id, parent_file_id, root_file_id, size, updated_at, version,
+                         workspace_id, writer_id, name, url, status, type)
+VALUES (true, '2024-05-20 09:35:28.381074', 1, 1, null, 1, 4084, '2024-05-20 09:35:28.395005', 1, 1, 1,
+        'test-image.png', 'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/test-image.png', 'APPROVED',
+        'PNG');
+INSERT INTO gitbox.file (is_latest, created_at, folder_id, id, parent_file_id, root_file_id, size, updated_at, version,
+                         workspace_id, writer_id, name, url, status, type)
+VALUES (true, '2024-05-20 09:37:52.833821', 2, 2, null, 2, 4084, '2024-05-20 09:42:09.365865', 1, 1, 1, 'string',
+        'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/test-image.png', 'DELETED', 'PNG');
+INSERT INTO gitbox.file (is_latest, created_at, folder_id, id, parent_file_id, root_file_id, size, updated_at, version,
+                         workspace_id, writer_id, name, url, status, type)
+VALUES (false, '2024-05-20 09:46:39.424304', 1, 3, 1, 1, 4084, '2024-05-20 09:46:39.424304', 2, 1, 1,
+        'test-image 2.png', 'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/test-image%202.png', 'PENDING',
+        'PNG');
+
+INSERT INTO gitbox.pull_request (created_at, file_id, id, updated_at, writer_id, message, title)
+VALUES ('2024-05-20 09:46:39.435614', 3, 1, '2024-05-20 09:46:39.435614', 1, 'PR 코멘트', '새로운 PR');
 
