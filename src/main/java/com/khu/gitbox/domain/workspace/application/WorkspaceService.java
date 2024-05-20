@@ -150,7 +150,7 @@ public class WorkspaceService {
 	public Workspace findWorkspaceById(Long workspaceId) {
 		// 워크스페이스 id로 검색 로직 구현
 		return workspaceRepository.findById(workspaceId)
-			.orElseThrow(() -> new CustomException(HttpStatus.FORBIDDEN, "존재하지 않는 워크스페이스입니다."));
+			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "워크스페이스를 찾을 수 없습니다."));
 	}
 
 	private void validateWorkspaceOwner(Workspace workspace, Long memberId) {

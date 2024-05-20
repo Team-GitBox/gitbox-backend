@@ -24,7 +24,7 @@ public class MemberService {
 
 	public Long signUp(SignUpRequest request) {
 		memberRepository.findByEmail(request.email()).ifPresent(member -> {
-			throw new CustomException(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다. :" + member.getEmail());
+			throw new CustomException(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다 : " + member.getEmail());
 		});
 
 		Member member = Member.builder()
@@ -66,6 +66,6 @@ public class MemberService {
 
 	public Member findMemberById(Long memberId) {
 		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다. : " + memberId));
+			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다 : " + memberId));
 	}
 }
