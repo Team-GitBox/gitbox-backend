@@ -39,7 +39,7 @@ public class Folder extends BaseEntity {
 	}
 
 	public void updateFolder(String name, Long parentFolderId) {
-		this.name = name;
+		this.name = name != null ? name : this.name;
 		this.parentFolderId = parentFolderId != null ? parentFolderId : this.parentFolderId;
 	}
 }
