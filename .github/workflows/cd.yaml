@@ -19,17 +19,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      #      ## gradle 캐싱
-      #      - name: Gradle Caching
-      #        uses: actions/cache@v3
-      #        with:
-      #          path: |
-      #            ~/.gradle/caches
-      #            ~/.gradle/wrapper
-      #          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-      #          restore-keys: |
-      #            ${{ runner.os }}-gradle-
-
       ## create application-secret.yml
       - name: make application-secret.yml
         run: |
@@ -66,9 +55,9 @@ jobs:
         uses: appleboy/scp-action@master
         id: deploy-prod
         with:
-          host: ${{ secrets.HOME_SERVER_IP }} # 홈 서버의 호스트로 변경
+          host: ${{ secrets.HOME_SERVER_IP }}
           username: tuna
-          password: ${{ secrets.HOME_SERVER_PASSWORD }} # 홈 서버 접속을 위한 비밀번호
+          password: ${{ secrets.HOME_SERVER_PASSWORD }}
           port: 22
           script: |
             if [ ! -z "$(docker ps -q)" ]; then
@@ -82,25 +71,8 @@ jobs:
             docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PASSWORD }}
             
             docker pull ${{ secrets.DOCKER_ID }}/tiki-taza
-            docker pull wurstmeister/zookeeper
             
             docker network create tikitaza
-            
-            docker run -d \
-              --name zookeeper \
-              --network=tikitaza \
-              -p 2181:2181 \
-              wurstmeister/zookeeper
-            
-            # Kafka 컨테이너 실행
-            docker run -d \
-              --name kafka \
-              --network=tikitaza \
-              -p 9092:9092 \
-              -e KAFKA_ADVERTISED_HOST_NAME=${{ secrets.HOME_SERVER_IP }}\
-              -e KAFKA_ADVERTISED_PORT=9092 \
-              -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 \
-              wurstmeister/kafka
             
             docker run -d \
               --name redis \
