@@ -18,19 +18,15 @@ INSERT INTO gitbox.folder (created_at, id, parent_folder_id, updated_at, workspa
 VALUES ('2024-05-20 09:31:37.473576', 2, 1, '2024-05-20 09:34:10.245099', 1, 'picture');
 
 INSERT INTO gitbox.file (is_latest, created_at, folder_id, id, parent_file_id, root_file_id, size, updated_at, version,
-                         workspace_id, writer_id, name, url, status, type)
+                         workspace_id, writer_id, name, url, status, type, is_deleted)
 VALUES (true, '2024-05-20 09:35:28.381074', 1, 1, null, 1, 4084, '2024-05-20 09:35:28.395005', 1, 1, 1,
         'test-image.png', 'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/test-image.png', 'APPROVED',
-        'PNG');
+        'PNG', false);
 INSERT INTO gitbox.file (is_latest, created_at, folder_id, id, parent_file_id, root_file_id, size, updated_at, version,
-                         workspace_id, writer_id, name, url, status, type)
-VALUES (true, '2024-05-20 09:37:52.833821', 2, 2, null, 2, 4084, '2024-05-20 09:42:09.365865', 1, 1, 1, 'string',
-        'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/test-image.png', 'DELETED', 'PNG');
-INSERT INTO gitbox.file (is_latest, created_at, folder_id, id, parent_file_id, root_file_id, size, updated_at, version,
-                         workspace_id, writer_id, name, url, status, type)
+                         workspace_id, writer_id, name, url, status, type, is_deleted)
 VALUES (false, '2024-05-20 09:46:39.424304', 1, 3, 1, 1, 4084, '2024-05-20 09:46:39.424304', 2, 1, 1,
         'test-image 2.png', 'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/test-image%202.png', 'PENDING',
-        'PNG');
+        'PNG', false);
 
 INSERT INTO gitbox.pull_request (created_at, file_id, id, updated_at, writer_id, message, title)
 VALUES ('2024-05-20 09:46:39.435614', 3, 1, '2024-05-20 09:46:39.435614', 1, 'PR 코멘트', '새로운 PR');

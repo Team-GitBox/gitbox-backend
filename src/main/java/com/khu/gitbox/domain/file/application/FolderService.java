@@ -77,7 +77,7 @@ public class FolderService {
 	}
 
 	private List<FileGetResponse> getFilesInFolder(Long folderId) {
-		return fileRepository.findAllByFolderId(folderId)
+		return fileRepository.findLatestByFolderId(folderId)
 			.stream()
 			.map(FileGetResponse::of)
 			.toList();

@@ -6,7 +6,5 @@ public enum FileStatus {
 	// 승인 및 첫 업로드
 	APPROVED,
 	// 거절
-	REJECTED,
-	// 삭제
-	DELETED;
+	REJECTED
 }

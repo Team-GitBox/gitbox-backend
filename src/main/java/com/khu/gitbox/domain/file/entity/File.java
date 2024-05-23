@@ -50,6 +50,9 @@ public class File extends BaseEntity {
 	@Column(name = "is_latest", nullable = false)
 	private boolean isLatest;
 
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted;
+
 	@Column(name = "writer_id", nullable = false)
 	private Long writerId;
 
@@ -107,9 +110,9 @@ public class File extends BaseEntity {
 	}
 
 	public void delete() {
-		if (this.status == FileStatus.DELETED) {
+		if (this.isDeleted) {
 			throw new CustomException(HttpStatus.BAD_REQUEST, "이미 삭제된 파일입니다.");
 		}
-		this.status = FileStatus.DELETED;
+		this.isDeleted = true;
 	}
 }
