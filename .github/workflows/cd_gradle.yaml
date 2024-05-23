@@ -26,7 +26,7 @@ jobs:
           touch ./api/src/main/resources/application-secret.yml
         shell: bash
       - name: deliver application-secret.yml
-        run: echo "${{ secrets.APPLICATION_SECRET }}" > ./api/src/main/resources/application-secret.yml
+        run: echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yaml
         shell: bash
 
       # 빌드 및 테스트 단계.
