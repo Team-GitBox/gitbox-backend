@@ -52,7 +52,7 @@ jobs:
 
       # Docker 파일을 홈 서버에 배포
       - name: Deploy to Prod
-        uses: appleboy/scp-action@master
+        uses: appleboy/ssh-action@master
         id: deploy-prod
         with:
           host: ${{ secrets.HOME_SERVER_IP }}
