@@ -83,7 +83,7 @@ jobs:
             docker run -d \
               --name gitbox-server \
               --network=gitbox \
-              -p 80:8080 \
+              -p 1234:1234 \
               -e TZ=Asia/Seoul \
               ${{ secrets.DOCKER_ID }}/gitbox
             
