@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,13 +16,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.file.application.FileService;
+import com.khu.gitbox.domain.file.presentation.dto.FileGetRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileUpdateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.PullRequestCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/files")
 @RequiredArgsConstructor
@@ -33,6 +38,13 @@ public class FileController {
 		@RequestPart(value = "request") FileCreateRequest request,
 		@RequestPart(value = "file") MultipartFile multipartFile) {
 		final FileGetResponse response = fileService.uploadFile(request, multipartFile);
+		return ApiResponse.ok(response);
+	}
+
+	@GetMapping(value = "")
+	public ApiResponse<List<FileGetResponse>> getFileByTag(@Valid @ModelAttribute FileGetRequest request) {
+		log.info("{}", request);
+		final List<FileGetResponse> response = fileService.getFilesByTag(request);
 		return ApiResponse.ok(response);
 	}
 
@@ -60,7 +72,7 @@ public class FileController {
 	@PatchMapping(value = "/{fileId}")
 	public ApiResponse<Void> getFileTree(
 		@PathVariable Long fileId,
-		@RequestBody FileUpdateRequest request) {
+		@Valid @RequestBody FileUpdateRequest request) {
 		fileService.updateFile(fileId, request);
 		return ApiResponse.ok();
 	}

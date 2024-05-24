@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.khu.gitbox.domain.file.entity.File;
+import com.khu.gitbox.domain.file.entity.FileTag;
 
 public interface FileRepository extends JpaRepository<File, Long> {
 	void deleteByFolderId(Long folderId);
@@ -22,6 +23,9 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	@Query("SELECT f FROM File f WHERE f.workspaceId = :workspaceId AND f.isDeleted = FALSE ORDER BY f.name ASC")
 	List<File> findAllByWorkspaceId(Long workspaceId);
+
+	@Query("SELECT f FROM File f WHERE f.workspaceId = :workspaceId AND f.tag = :tag AND f.isDeleted = FALSE ORDER BY f.name ASC")
+	List<File> findAllByTag(Long workspaceId, FileTag tag);
 
 	@Query("SELECT f FROM File f WHERE f.folderId = :folderId AND f.name = :name AND f.isDeleted = FALSE")
 	Optional<File> findByFolderIdAndName(Long folderId, String name);

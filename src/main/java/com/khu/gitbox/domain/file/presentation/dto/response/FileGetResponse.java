@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileStatus;
+import com.khu.gitbox.domain.file.entity.FileTag;
 import com.khu.gitbox.domain.file.entity.FileType;
 
 public record FileGetResponse(
@@ -11,6 +12,7 @@ public record FileGetResponse(
 	String name,
 	Long size,
 	String url,
+	FileTag tag,
 	FileType type,
 	FileStatus status,
 	Long version,
@@ -29,6 +31,7 @@ public record FileGetResponse(
 			file.getName(),
 			file.getSize(),
 			file.getUrl(),
+			file.getTag(),
 			file.getType(),
 			file.getStatus(),
 			file.getVersion(),

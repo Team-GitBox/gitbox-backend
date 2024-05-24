@@ -81,7 +81,7 @@ public class WorkspaceController {
 		return ApiResponse.ok();
 	}
 
-	@GetMapping("/{workspace}/history")
+	@GetMapping("/{workspaceId}/history")
 	public ApiResponse<Page> history(
 		@PathVariable Long workspaceId,
 		@RequestParam int page,

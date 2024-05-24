@@ -37,6 +37,10 @@ public class File extends BaseEntity {
 	private String url;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "tag")
+	private FileTag tag;
+
+	@Enumerated(EnumType.STRING)
 	@Column(name = "type", nullable = false)
 	private FileType type;
 
@@ -101,12 +105,17 @@ public class File extends BaseEntity {
 		this.rootFileId = id;
 	}
 
-	public void updateFileName(String name) {
+	public void updateFile(String name, FileTag tag) {
 		this.name = name;
+		this.tag = tag;
 	}
 
 	public void updateStatus(FileStatus status) {
 		this.status = status;
+	}
+
+	public void updateTag(FileTag tag) {
+		this.tag = tag;
 	}
 
 	public void delete() {

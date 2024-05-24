@@ -15,6 +15,7 @@ import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
 import com.khu.gitbox.domain.file.entity.Folder;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
+import com.khu.gitbox.domain.file.presentation.dto.FileGetRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileUpdateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.PullRequestCreateRequest;
@@ -50,7 +51,7 @@ public class FileService {
 		final String fileName = multipartFile.getOriginalFilename();
 		final FileType fileType = FileType.from(getExtension(fileName));
 		validateFileName(folder.getId(), fileName);
-		
+
 		final File file = File.builder()
 			.name(fileName)
 			.size(multipartFile.getSize())
@@ -137,7 +138,7 @@ public class FileService {
 	// 파일 업데이트 (이름 수정)
 	public void updateFile(Long fileId, FileUpdateRequest request) {
 		final File file = findFileById(fileId);
-		file.updateFileName(request.name());
+		file.updateFile(request.name(), request.tag());
 	}
 
 	// 파일 삭제
@@ -182,5 +183,12 @@ public class FileService {
 			.ifPresent(pendingFile -> {
 				throw new CustomException(HttpStatus.BAD_REQUEST, "이미 업데이트 대기 중인 파일이 있습니다.");
 			});
+	}
+
+	public List<FileGetResponse> getFilesByTag(FileGetRequest request) {
+		return fileRepository.findAllByTag(request.workspaceId(), request.tag())
+			.stream()
+			.map(FileGetResponse::of)
+			.toList();
 	}
 }
