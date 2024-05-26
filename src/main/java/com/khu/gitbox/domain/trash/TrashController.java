@@ -31,7 +31,7 @@ public class TrashController {
 
     @DeleteMapping("")
     @Operation(summary = "여러 파일 삭제하기")
-    public ApiResponse<Void> deleteFiles(@Valid @RequestBody List<String> request) {
+    public ApiResponse<Void> deleteFiles(@Valid @RequestBody List<Long> request) {
         trashService.deleteFiles(request);
         return ApiResponse.ok();
     }
@@ -45,7 +45,7 @@ public class TrashController {
 
     @PostMapping("")
     @Operation(summary = "여러 파일 복구하기")
-    public ApiResponse<Void> restoreFiles(@Valid @RequestBody List<String> request) {
+    public ApiResponse<Void> restoreFiles(@Valid @RequestBody List<Long> request) {
         trashService.restoreFiles(request);
         return ApiResponse.ok();
     }

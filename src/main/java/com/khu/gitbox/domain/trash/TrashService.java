@@ -31,9 +31,9 @@ public class TrashService {
         fileRepository.deleteById(fileId);
     }
 
-    public void deleteFiles(List<String> request) {
-        request.forEach(name -> {
-            fileRepository.deleteByName(name);
+    public void deleteFiles(List<Long> request) {
+        request.forEach(id -> {
+            fileRepository.deleteById(id);
         });
     }
 
@@ -43,9 +43,9 @@ public class TrashService {
         file.restore();
     }
 
-    public void restoreFiles(List<String> request) {
-        request.forEach(name -> {
-            File file = fileRepository.findByName(name)
+    public void restoreFiles(List<Long> request) {
+        request.forEach(id -> {
+            File file = fileRepository.findById(id)
                     .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
             file.restore();
         });
