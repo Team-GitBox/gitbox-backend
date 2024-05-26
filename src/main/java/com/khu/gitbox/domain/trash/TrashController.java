@@ -24,29 +24,29 @@ public class TrashController {
 
     @DeleteMapping("/{fileId}")
     @Operation(summary = "단일 파일 삭제하기")
-    public ApiResponse<Long> deleteFile(@PathVariable("fileId") Long fileId) {
-        Long id = trashService.deleteFile();
-        return ApiResponse.ok(id);
+    public ApiResponse<Void> deleteFile(@PathVariable("fileId") Long fileId) {
+        trashService.deleteFile(fileId);
+        return ApiResponse.ok();
     }
 
     @DeleteMapping("")
     @Operation(summary = "여러 파일 삭제하기")
-    public ApiResponse<Long> deleteFiles(@Valid @RequestBody List<String> request) {
-        Long id = trashService.deleteFiles(request);
-        return ApiResponse.ok(id);
+    public ApiResponse<Void> deleteFiles(@Valid @RequestBody List<String> request) {
+        trashService.deleteFiles(request);
+        return ApiResponse.ok();
     }
 
     @PostMapping("/{fileId}")
     @Operation(summary = "단일 파일 복구하기")
-    public ApiResponse<Long> restoreFile(@PathVariable("fileId") Long fileId) {
-        Long id = trashService.restoreFile();
-        return ApiResponse.ok(id);
+    public ApiResponse<Void> restoreFile(@PathVariable("fileId") Long fileId) {
+        trashService.restoreFile(fileId);
+        return ApiResponse.ok();
     }
 
     @PostMapping("")
     @Operation(summary = "여러 파일 복구하기")
-    public ApiResponse<Long> restoreFiles(@Valid @RequestBody List<String> request) {
-        Long id = trashService.restoreFiles(request);
-        return ApiResponse.ok(id);
+    public ApiResponse<Void> restoreFiles(@Valid @RequestBody List<String> request) {
+        trashService.restoreFiles(request);
+        return ApiResponse.ok();
     }
 }
