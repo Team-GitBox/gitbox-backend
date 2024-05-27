@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{workspaceId}/trash")
+@RequestMapping("/api/workspace/{workspaceId}/trash")
 public class TrashController {
 
     private final TrashService trashService;

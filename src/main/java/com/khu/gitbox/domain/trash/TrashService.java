@@ -6,6 +6,7 @@ import com.khu.gitbox.domain.file.infrastructure.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,7 @@ public class TrashService {
                 .forEach(file -> {
                     trashFileResponses.add(TrashFileResponse.of(file));
                 });
-        if (trashFileResponses.isEmpty())
-            throw new CustomException(HttpStatus.NOT_FOUND, "휴지통이 비어있습니다.");
+
         return trashFileResponses;
     }
 
@@ -31,6 +31,7 @@ public class TrashService {
         fileRepository.deleteById(fileId);
     }
 
+    @Transactional
     public void deleteFiles(List<Long> request) {
         request.forEach(id -> {
             fileRepository.deleteById(id);
@@ -43,6 +44,7 @@ public class TrashService {
         file.restore();
     }
 
+    @Transactional
     public void restoreFiles(List<Long> request) {
         request.forEach(id -> {
             File file = fileRepository.findById(id)
