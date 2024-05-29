@@ -84,6 +84,7 @@ public class WebSecurityConfig {
 
 	private void configureSecurityDefaults(HttpSecurity http) throws Exception {
 		http
+			.cors(AbstractHttpConfigurer::disable)
 			.csrf(AbstractHttpConfigurer::disable)
 			.anonymous(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)

@@ -24,7 +24,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	private String[] getAllowOrigins() {
 		return Arrays.asList(
 			"http://localhost:3000",
-			"http://localhost:5173"
+			"http://localhost:5173",
+			"http://125.250.17.196:1234"
 		).toArray(String[]::new);
 	}
 }

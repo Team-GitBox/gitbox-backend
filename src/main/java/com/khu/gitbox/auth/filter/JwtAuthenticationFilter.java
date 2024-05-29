@@ -8,7 +8,6 @@ import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.khu.gitbox.auth.provider.JwtTokenProvider;
@@ -16,6 +15,7 @@ import com.khu.gitbox.auth.provider.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -47,12 +47,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private String parseJwt(HttpServletRequest request) {
-		String headerAuth = request.getHeader("Cookie");
-
-		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("accessToken=")) {
-			return headerAuth.substring(12);
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("accessToken".equals(cookie.getName())) {
+					log.info("cookies : {}", cookie.getValue());
+					return cookie.getValue();
+				}
+			}
 		}
-
 		throw new AuthenticationCredentialsNotFoundException("토큰이 존재하지 않습니다.");
 	}
 }
