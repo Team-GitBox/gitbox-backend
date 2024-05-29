@@ -31,7 +31,7 @@ public class AuthController {
 
 		// 쿠키 생성
 		Cookie cookie = new Cookie("accessToken", authResponse.accessToken());
-		cookie.setHttpOnly(true); // 클라이언트의 스크립트에서 접근하지 못하도록 설정
+		cookie.setHttpOnly(false); // 자바스크립트에서 쿠키 접근 가능
 		cookie.setPath("/"); // 쿠키를 전송할 요청 경로
 		cookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키의 만료 시간 (예: 일주일)
 

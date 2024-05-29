@@ -24,6 +24,7 @@ import com.khu.gitbox.domain.workspace.presentation.dto.CreateWorkspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.MemberInfo;
 import com.khu.gitbox.domain.workspace.presentation.dto.OwnerInfo;
 import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceDetail;
+import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceSummary;
 
 import lombok.RequiredArgsConstructor;
 
@@ -94,6 +95,15 @@ public class WorkspaceService {
 		members.stream().map(Member::getId).forEach(memberId -> {
 			workspaceMemberRepository.deleteByWorkspaceIdAndMemberId(workspaceId, memberId);
 		});
+	}
+
+	// 내 워크스페이스 목록
+	public List<WorkspaceSummary> getWorkspaces(Long memberId) {
+		return workspaceMemberRepository.findByMemberId(memberId).stream()
+			.map((workspaceMember) -> {
+				Workspace workspace = findWorkspaceById(workspaceMember.getWorkspaceId());
+				return new WorkspaceSummary(workspace.getId(), workspace.getName());
+			}).toList();
 	}
 
 	// 워크스페이스 정보

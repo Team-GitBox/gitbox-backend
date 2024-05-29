@@ -22,6 +22,7 @@ import com.khu.gitbox.domain.workspace.presentation.dto.AddMembers;
 import com.khu.gitbox.domain.workspace.presentation.dto.CreateWorkspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.DeleteMembers;
 import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceDetail;
+import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceSummary;
 import com.khu.gitbox.util.SecurityContextUtil;
 
 import jakarta.validation.Valid;
@@ -40,6 +41,13 @@ public class WorkspaceController {
 		Long ownerId = SecurityContextUtil.getCurrentMemberId();
 		Long workspaceId = workspaceService.createWorkspace(workspace, ownerId);
 		return ApiResponse.created(workspaceId);
+	}
+
+	@GetMapping
+	public ApiResponse<List<WorkspaceSummary>> getMyWorkspace() {
+		Long memberId = SecurityContextUtil.getCurrentMemberId();
+		List<WorkspaceSummary> response = workspaceService.getWorkspaces(memberId);
+		return ApiResponse.ok(response);
 	}
 
 	//워크스페이스 정보 가져오기
