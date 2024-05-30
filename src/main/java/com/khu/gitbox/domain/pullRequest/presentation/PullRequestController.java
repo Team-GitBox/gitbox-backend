@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +12,7 @@ import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.pullRequest.application.PullRequestService;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestCommentDto;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestDto;
+import com.khu.gitbox.util.SecurityContextUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,13 +33,12 @@ public class PullRequestController {
 
 	@PostMapping("/pr")
 	public ApiResponse<Boolean> checkPullRequestComment(
-		@RequestHeader("Cookie") String cookie,
 		@RequestBody PullRequestCommentDto pullRequestCommentDto,
 		@PathVariable Long fileId) {
 
-		Long id = jwtTokenProvider.getId(cookie.substring(12));
+		Long memberId = SecurityContextUtil.getCurrentMemberId();
 
-		pullRequestService.isApprovedPullRequest(pullRequestCommentDto, id, fileId);
+		pullRequestService.isApprovedPullRequest(pullRequestCommentDto, memberId, fileId);
 
 		return ApiResponse.created(pullRequestCommentDto.getIsApproved());
 	}
