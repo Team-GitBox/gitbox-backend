@@ -1,5 +1,7 @@
 package com.khu.gitbox.auth.filter;
 
+import static org.springframework.util.StringUtils.*;
+
 import java.io.IOException;
 
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -15,7 +17,6 @@ import com.khu.gitbox.auth.provider.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+	private static final String AUTHENTICATION_SCHEME = "Bearer ";
 	private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
@@ -47,14 +49,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private String parseJwt(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if ("accessToken".equals(cookie.getName())) {
-					log.info("cookies : {}", cookie.getValue());
-					return cookie.getValue();
-				}
-			}
+		// Cookie[] cookies = request.getCookies();
+		// if (cookies != null) {
+		// 	for (Cookie cookie : cookies) {
+		// 		if ("accessToken".equals(cookie.getName())) {
+		// 			log.info("cookies : {}", cookie.getValue());
+		// 			return cookie.getValue();
+		// 		}
+		// 	}
+		// }
+
+		String bearerToken = request.getHeader("Authorization");
+		if (hasText(bearerToken) && bearerToken.startsWith(AUTHENTICATION_SCHEME)) {
+			return bearerToken.substring(AUTHENTICATION_SCHEME.length());
 		}
 		throw new AuthenticationCredentialsNotFoundException("토큰이 존재하지 않습니다.");
 	}
