@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.khu.gitbox.common.exception.CustomException;
+import com.khu.gitbox.domain.action.ActionHistoryService;
+import com.khu.gitbox.domain.action.entity.Action;
 import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
@@ -41,6 +43,7 @@ public class FileService {
 	private final MemberService memberService;
 	private final WorkspaceService workspaceService;
 	private final FolderService folderService;
+	private final ActionHistoryService actionHistoryService;
 	private final S3Service s3Service;
 
 	// 파일 업로드
@@ -70,6 +73,7 @@ public class FileService {
 
 		final File savedFile = fileRepository.save(file);
 		savedFile.updateRootFileId(savedFile.getId());
+		actionHistoryService.createActionHistory(workspace.getId(), member, savedFile, Action.UPLOAD);
 
 		return FileGetResponse.of(fileRepository.save(savedFile));
 	}
@@ -119,6 +123,7 @@ public class FileService {
 		final Workspace workspace = workspaceService.findWorkspaceById(parentFile.getWorkspaceId());
 		workspace.increaseUsedStorage(savedFile.getSize());
 
+		actionHistoryService.createActionHistory(workspace.getId(), member, savedFile, Action.PULL_REQUEST);
 		return FileGetResponse.of(savedFile);
 	}
 
@@ -144,14 +149,21 @@ public class FileService {
 	// 파일 삭제
 	public void deleteFile(Long fileId) {
 		final File file = findFileById(fileId);
+		final Member member = memberService.findMemberById(getCurrentMemberId());
 		file.delete();
+		actionHistoryService.createActionHistory(file.getWorkspaceId(), member, file, Action.DELETE);
 	}
 
 	// 파일 트리 삭제
 	public void deleteFileTree(Long fileId) {
-		final File file = findFileById(fileId);
-		fileRepository.findAllByRootFileId(file.getRootFileId())
-			.forEach(File::delete);
+		final File targetFile = findFileById(fileId);
+		final Member member = memberService.findMemberById(getCurrentMemberId());
+
+		fileRepository.findAllByRootFileId(targetFile.getRootFileId())
+			.forEach(file -> {
+				file.delete();
+				actionHistoryService.createActionHistory(file.getWorkspaceId(), member, file, Action.DELETE);
+			});
 	}
 
 	private File findFileById(Long fileId) {

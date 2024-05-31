@@ -2,22 +2,18 @@ package com.khu.gitbox.domain.workspace.presentation;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.khu.gitbox.common.response.ApiResponse;
-import com.khu.gitbox.domain.action.ActionHistoryDto;
 import com.khu.gitbox.domain.action.ActionHistoryService;
 import com.khu.gitbox.domain.workspace.application.WorkspaceService;
+import com.khu.gitbox.domain.workspace.presentation.dto.ActionHistoryGetResponse;
 import com.khu.gitbox.domain.workspace.presentation.dto.AddMembers;
 import com.khu.gitbox.domain.workspace.presentation.dto.CreateWorkspace;
 import com.khu.gitbox.domain.workspace.presentation.dto.DeleteMembers;
@@ -90,13 +86,10 @@ public class WorkspaceController {
 	}
 
 	@GetMapping("/{workspaceId}/history")
-	public ApiResponse<Page> history(
-		@PathVariable Long workspaceId,
-		@RequestParam int page,
-		@PageableDefault(page = 0, size = 7) Pageable pageable) {
+	public ApiResponse<List<ActionHistoryGetResponse>> history(
+		@PathVariable Long workspaceId) {
 
-		Page<ActionHistoryDto> actionHistoryList = actionHistoryService.getActionHistoryList(page, pageable,
-			workspaceId);
+		List<ActionHistoryGetResponse> actionHistoryList = actionHistoryService.getActionHistories(workspaceId);
 
 		return ApiResponse.ok(actionHistoryList);
 	}
