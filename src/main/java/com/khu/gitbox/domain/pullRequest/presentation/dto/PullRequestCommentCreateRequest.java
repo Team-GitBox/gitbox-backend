@@ -1,5 +1,7 @@
 package com.khu.gitbox.domain.pullRequest.presentation.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PullRequestCommentDto {
-    private String comment;
-    private Boolean isApproved;
-    private Long reviewerId;
+public class PullRequestCommentCreateRequest {
+	@NotBlank
+	private String comment;
+	@NotNull
+	private Boolean isApproved;
 }

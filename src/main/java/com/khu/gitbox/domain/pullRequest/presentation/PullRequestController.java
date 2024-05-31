@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.khu.gitbox.auth.provider.JwtTokenProvider;
 import com.khu.gitbox.common.response.ApiResponse;
 import com.khu.gitbox.domain.pullRequest.application.PullRequestService;
-import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestCommentDto;
+import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestCommentCreateRequest;
 import com.khu.gitbox.domain.pullRequest.presentation.dto.PullRequestDto;
 import com.khu.gitbox.util.SecurityContextUtil;
 
@@ -32,15 +32,14 @@ public class PullRequestController {
 	}
 
 	@PostMapping("/pr")
-	public ApiResponse<Boolean> checkPullRequestComment(
-		@RequestBody PullRequestCommentDto pullRequestCommentDto,
+	public ApiResponse<Boolean> createPullRequestComment(
+		@RequestBody PullRequestCommentCreateRequest pullRequestCommentCreateRequest,
 		@PathVariable Long fileId) {
 
-		Long memberId = SecurityContextUtil.getCurrentMemberId();
+		Long reviewerId = SecurityContextUtil.getCurrentMemberId();
+		pullRequestService.isApprovedPullRequest(pullRequestCommentCreateRequest, reviewerId, fileId);
 
-		pullRequestService.isApprovedPullRequest(pullRequestCommentDto, memberId, fileId);
-
-		return ApiResponse.created(pullRequestCommentDto.getIsApproved());
+		return ApiResponse.created(pullRequestCommentCreateRequest.getIsApproved());
 	}
 
 }

@@ -78,7 +78,7 @@ public class FileService {
 		return FileGetResponse.of(fileRepository.save(savedFile));
 	}
 
-	// 새로운 버전 파일 업로드 (+ PR 생성)
+	// 새로운 버전 파일 업로드 & PR 생성
 	public FileGetResponse uploadNewVersionFile(
 		Long parentFileId,
 		PullRequestCreateRequest request,
@@ -118,6 +118,9 @@ public class FileService {
 			.fileId(savedFile.getId())
 			.build();
 		pullRequestRepository.save(pullRequest);
+
+		// 파일 PR ID 설정
+		savedFile.updatePullRequestId(pullRequest.getId());
 
 		// 워크스페이스 용량 업데이트
 		final Workspace workspace = workspaceService.findWorkspaceById(parentFile.getWorkspaceId());
@@ -166,7 +169,7 @@ public class FileService {
 			});
 	}
 
-	private File findFileById(Long fileId) {
+	public File findFileById(Long fileId) {
 		return fileRepository.findById(fileId)
 			.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
 	}

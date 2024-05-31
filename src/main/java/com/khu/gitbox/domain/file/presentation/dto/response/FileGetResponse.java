@@ -22,6 +22,7 @@ public record FileGetResponse(
 	Long folderId,
 	Long parentFileId,
 	Long rootFileId,
+	Long pullRequestId,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
 ) {
@@ -41,6 +42,7 @@ public record FileGetResponse(
 			file.getFolderId(),
 			file.getParentFileId(),
 			file.getRootFileId(),
+			file.getPullRequestId(),
 			file.getCreatedAt(),
 			file.getUpdatedAt()
 		);
