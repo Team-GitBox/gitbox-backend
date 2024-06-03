@@ -17,8 +17,9 @@ import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
 import com.khu.gitbox.domain.file.entity.Folder;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
-import com.khu.gitbox.domain.file.presentation.dto.FileGetRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileCreateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.request.FileGetByKeywordRequest;
+import com.khu.gitbox.domain.file.presentation.dto.request.FileGetByTagRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FileUpdateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.PullRequestCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
@@ -200,8 +201,15 @@ public class FileService {
 			});
 	}
 
-	public List<FileGetResponse> getFilesByTag(FileGetRequest request) {
+	public List<FileGetResponse> getFilesByTag(FileGetByTagRequest request) {
 		return fileRepository.findAllByTag(request.workspaceId(), request.tag())
+			.stream()
+			.map(FileGetResponse::of)
+			.toList();
+	}
+
+	public List<FileGetResponse> getFilesByKeyword(FileGetByKeywordRequest request) {
+		return fileRepository.findAllByKeyword(request.workspaceId(), request.keyword())
 			.stream()
 			.map(FileGetResponse::of)
 			.toList();

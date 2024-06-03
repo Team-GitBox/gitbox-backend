@@ -21,6 +21,7 @@ import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceDetail;
 import com.khu.gitbox.domain.workspace.presentation.dto.WorkspaceSummary;
 import com.khu.gitbox.util.SecurityContextUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +32,7 @@ public class WorkspaceController {
 	private final WorkspaceService workspaceService;
 	private final ActionHistoryService actionHistoryService;
 
-	// 워크스페이스 생성
+	@Operation(summary = "워크스페이스 생성")
 	@PostMapping
 	public ApiResponse<Long> createWorkspace(@Valid @RequestBody CreateWorkspace workspace) {
 		Long ownerId = SecurityContextUtil.getCurrentMemberId();
@@ -39,6 +40,7 @@ public class WorkspaceController {
 		return ApiResponse.created(workspaceId);
 	}
 
+	@Operation(summary = "내 워크스페이스 목록 조회")
 	@GetMapping
 	public ApiResponse<List<WorkspaceSummary>> getMyWorkspace() {
 		Long memberId = SecurityContextUtil.getCurrentMemberId();
@@ -46,7 +48,7 @@ public class WorkspaceController {
 		return ApiResponse.ok(response);
 	}
 
-	//워크스페이스 정보 가져오기
+	@Operation(summary = "워크스페이스 상세 조회")
 	@GetMapping("/{workspaceId}")
 	public ApiResponse<WorkspaceDetail> getWorkspace(@PathVariable Long workspaceId) {
 		Long memberId = SecurityContextUtil.getCurrentMemberId();
@@ -54,7 +56,7 @@ public class WorkspaceController {
 		return ApiResponse.created(workspaceDetail); // 워크스페이스 정보 반환
 	}
 
-	// 워크스페이스 멤버 추가
+	@Operation(summary = "워크스페이스 멤버 추가")
 	@PostMapping("/{workspaceId}/members")
 	public ApiResponse<List<Long>> addMembersToWorkspace(
 		@PathVariable Long workspaceId,
@@ -67,7 +69,7 @@ public class WorkspaceController {
 		return ApiResponse.created(memberIds);
 	}
 
-	//워크스페이스 멤버 삭제
+	@Operation(summary = "워크스페이스 멤버 삭제")
 	@DeleteMapping("/{workspaceId}/members")
 	public ApiResponse<Void> deleteWorkspaceMembers(
 		@PathVariable Long workspaceId,
@@ -77,7 +79,7 @@ public class WorkspaceController {
 		return ApiResponse.ok();
 	}
 
-	//워크스페이스 삭제
+	@Operation(summary = "워크스페이스 삭제")
 	@DeleteMapping("/{workspaceId}")
 	public ApiResponse<Void> deleteWorkspace(@PathVariable Long workspaceId) {
 		Long memberId = SecurityContextUtil.getCurrentMemberId();
@@ -85,12 +87,11 @@ public class WorkspaceController {
 		return ApiResponse.ok();
 	}
 
+	@Operation(summary = "워크스페이스 히스토리 조회")
 	@GetMapping("/{workspaceId}/history")
 	public ApiResponse<List<ActionHistoryGetResponse>> history(
 		@PathVariable Long workspaceId) {
-
 		List<ActionHistoryGetResponse> actionHistoryList = actionHistoryService.getActionHistories(workspaceId);
-
 		return ApiResponse.ok(actionHistoryList);
 	}
 }
