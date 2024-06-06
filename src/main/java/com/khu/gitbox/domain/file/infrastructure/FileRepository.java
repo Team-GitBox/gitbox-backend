@@ -34,6 +34,9 @@ public interface FileRepository extends JpaRepository<File, Long> {
     @Query("SELECT f FROM File f WHERE f.workspaceId = :workspaceId AND f.isDeleted = TRUE ORDER BY f.name ASC")
     List<File> findAllByWorkspaceIdTrash(Long workspaceId);
 
-    @Query("DELETE FROM File f WHERE f.id = :id AND f.isDeleted = TRUE")
-    void deleteById(String id);
+    @Query("DELETE FROM File f WHERE f.rootFileId = :id AND f.isDeleted = TRUE")
+    void deleteByRootFileId(Long rootFileId);
+
+    @Query("SELECT f FROM File f WHERE f.rootFileId = :rootFileId AND f.isDeleted = TRUE ORDER BY f.version DESC")
+    List<File> findAllByRootFileIdTrash(Long rootFileId);
 }
