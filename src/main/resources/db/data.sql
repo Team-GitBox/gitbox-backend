@@ -31,19 +31,19 @@ INSERT INTO gitbox.file (is_deleted, is_latest, created_at, folder_id, parent_fi
 VALUES (false, true, '2024-05-31 14:58:06.197759', 1, null, null, 1, 2955371, '2024-05-31 14:58:06.221400', 1, 1, 1,
         'temp-image.jpeg', 'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/temp-image.jpeg_30bc7',
         'APPROVED', null, 'JPEG');
-INSERT INTO gitbox.file (is_deleted, is_latest, created_at, folder_id, parent_file_id, pull_request_id, root_file_id,
-                         size, updated_at, version, workspace_id, writer_id, name, url, status, tag, type)
-VALUES (false, false, '2024-05-31 14:59:49.801787', 1, 1, 1, 1, 2955371, '2024-05-31 15:01:12.329042', 2, 1, 1,
-        '새로운 버전 파일', 'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/temp-image-2.jpeg_c1cbc', 'PENDING',
-        'RED', 'JPEG');
-
-INSERT INTO gitbox.pull_request (created_at, file_id, parent_file_id, updated_at, writer_id, message, title)
-VALUES ('2024-05-31 14:59:49.821650', 2, null, '2024-05-31 14:59:49.821650', 1, '확인부탁드려요.', '새로운 파일 버전입니다.');
+-- INSERT INTO gitbox.file (is_deleted, is_latest, created_at, folder_id, parent_file_id, pull_request_id, root_file_id,
+--                          size, updated_at, version, workspace_id, writer_id, name, url, status, tag, type)
+-- VALUES (false, false, '2024-05-31 14:59:49.801787', 1, 1, 1, 1, 2955371, '2024-05-31 15:01:12.329042', 2, 1, 1,
+--         '새로운 버전 파일', 'https://gitbox-file-bucket.s3.ap-northeast-2.amazonaws.com/temp-image-2.jpeg_c1cbc', 'PENDING',
+--         'RED', 'JPEG');
+--
+-- INSERT INTO gitbox.pull_request (created_at, file_id, parent_file_id, updated_at, writer_id, message, title)
+-- VALUES ('2024-05-31 14:59:49.821650', 2, null, '2024-05-31 14:59:49.821650', 1, '확인부탁드려요.', '새로운 파일 버전입니다.');
 
 INSERT INTO gitbox.action_history (created_at, file_id, member_id, updated_at, workspace_id, file_name, member_name,
                                    action)
 VALUES ('2024-05-31 14:58:06.210129', 1, 1, '2024-05-31 14:58:06.210129', 1, 'temp-image.jpeg', 'string', 'UPLOAD');
-INSERT INTO gitbox.action_history (created_at, file_id, member_id, updated_at, workspace_id, file_name, member_name,
-                                   action)
-VALUES ('2024-05-31 14:59:49.856268', 2, 1, '2024-05-31 14:59:49.856268', 1, 'temp-image-2.jpeg', 'string',
-        'PULL_REQUEST');
+-- INSERT INTO gitbox.action_history (created_at, file_id, member_id, updated_at, workspace_id, file_name, member_name,
+--                                    action)
+-- VALUES ('2024-05-31 14:59:49.856268', 2, 1, '2024-05-31 14:59:49.856268', 1, 'temp-image-2.jpeg', 'string',
+--         'PULL_REQUEST');

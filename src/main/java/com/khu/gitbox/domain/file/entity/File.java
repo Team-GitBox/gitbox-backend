@@ -121,7 +121,7 @@ public class File extends BaseEntity {
         this.status = FileStatus.REJECTED;
     }
 
-    public void initPullRequestId() {
+    private void initPullRequestId() {
         this.pullRequestId = null;
     }
 

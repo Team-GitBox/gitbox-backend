@@ -20,7 +20,7 @@ public class PullRequestComment extends BaseEntity {
     private String comment;
 
     @Column(name = "is_approved", nullable = false)
-    private Boolean isApproved;
+    private boolean isApproved;
 
     @Column(name = "reviewer_id", nullable = false)
     private Long reviewerId;

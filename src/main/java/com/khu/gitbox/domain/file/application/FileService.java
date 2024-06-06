@@ -107,36 +107,41 @@ public class FileService {
                 .rootFileId(parentFile.getRootFileId())
                 .parentFileId(parentFile.getId())
                 .build();
-        final File savedFile = fileRepository.save(newVersionFile);
+        fileRepository.save(newVersionFile);
 
         if (workspaceMembers.size() > 1) {
             // PR 생성 (PR 승인 시 부모 파일을 구버전으로)
-            createPullRequest(request, member, savedFile);
+            createPullRequest(
+                    request.pullRequestTitle(),
+                    request.pullRequestMessage(),
+                    member.getId(),
+                    newVersionFile,
+                    parentFile);
         } else {
             // PR 승인
-            savedFile.approve(parentFile);
+            newVersionFile.approve(parentFile);
         }
 
         // 워크스페이스 용량 업데이트
         final Workspace workspace = workspaceService.findWorkspaceById(parentFile.getWorkspaceId());
-        workspace.increaseUsedStorage(savedFile.getSize());
+        workspace.increaseUsedStorage(newVersionFile.getSize());
 
-        actionHistoryService.createActionHistory(workspace.getId(), member, savedFile, Action.PULL_REQUEST);
-        return FileGetResponse.of(savedFile);
+        actionHistoryService.createActionHistory(workspace.getId(), member, newVersionFile, Action.PULL_REQUEST);
+        return FileGetResponse.of(newVersionFile);
     }
 
-    private void createPullRequest(PullRequestCreateRequest request, Member member, File savedFile) {
+    private void createPullRequest(String title, String message, Long writerId, File newVersionFile, File parentFile) {
         // PR 생성
         final PullRequest pullRequest = PullRequest.builder()
-                .title(request.pullRequestTitle())
-                .message(request.pullRequestMessage())
-                .writerId(member.getId())
-                .fileId(savedFile.getId())
+                .title(title)
+                .message(message)
+                .writerId(writerId)
+                .fileId(newVersionFile.getId())
+                .parentFileId(parentFile.getId())
                 .build();
-        pullRequestRepository.save(pullRequest);
-
-        // 파일 PR ID 설정
-        savedFile.updatePullRequestId(pullRequest.getId());
+        Long pullRequestId = pullRequestRepository.save(pullRequest).getId();
+        // 부모 파일 PR ID 설정
+        parentFile.updatePullRequestId(pullRequestId);
     }
 
     // 파일 조회

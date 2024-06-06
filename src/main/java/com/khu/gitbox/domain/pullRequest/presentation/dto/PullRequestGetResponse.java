@@ -12,10 +12,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PullRequestDto {
+public class PullRequestGetResponse {
     private String title;
     private String message;
     private String writer;
+    private Long parentFileId;
+    private Long fileId;
     private String fileUrl;
     private List<PullRequestComment> comments;
 

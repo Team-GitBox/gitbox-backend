@@ -32,10 +32,11 @@ public class PullRequest extends BaseEntity {
     private Long fileId;
 
     @Builder
-    public PullRequest(String title, String message, Long writerId, Long fileId) {
+    public PullRequest(String title, String message, Long writerId, Long fileId, Long parentFileId) {
         this.title = title;
         this.message = message;
         this.writerId = writerId;
         this.fileId = fileId;
+        this.parentFileId = parentFileId;
     }
 }
