@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record FolderCreateRequest(
-	@NotBlank
-	String name,
+        @NotBlank
+        String name,
 
-	@NotNull
-	Long parentFolderId) {
+        @NotNull
+        Long parentFolderId) {
 }

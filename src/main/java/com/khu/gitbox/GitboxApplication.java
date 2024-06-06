@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @SpringBootApplication
 public class GitboxApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(GitboxApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(GitboxApplication.class, args);
+    }
 
 }

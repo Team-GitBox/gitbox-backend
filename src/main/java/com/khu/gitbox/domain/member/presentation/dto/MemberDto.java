@@ -1,6 +1,5 @@
 package com.khu.gitbox.domain.member.presentation.dto;
 
-import com.khu.gitbox.domain.member.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -28,7 +28,6 @@ public class MemberDetailsService implements UserDetailsService {
                     return new UsernameNotFoundException("MEMBER_NOT_FOUND");
                 });
 
-
         List<GrantedAuthority> authorities = getAuthorities(member);
 
         return UserDetailsImpl.builder()

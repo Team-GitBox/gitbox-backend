@@ -1,6 +1,5 @@
 package com.khu.gitbox.domain.workspace.presentation.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

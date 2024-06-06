@@ -1,13 +1,7 @@
 package com.khu.gitbox.domain.pullRequest.entity;
 
 import com.khu.gitbox.common.BaseEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,30 +12,30 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "pull_request")
 public class PullRequest extends BaseEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(name = "title", nullable = false)
-	private String title;
+    @Column(name = "title", nullable = false)
+    private String title;
 
-	@Column(name = "message", nullable = false)
-	private String message;
+    @Column(name = "message", nullable = false)
+    private String message;
 
-	@Column(name = "writer_id", nullable = false) // 연관관계
-	private Long writerId;
+    @Column(name = "writer_id", nullable = false) // 연관관계
+    private Long writerId;
 
-	@Column(name = "parent_file_id")
-	private Long parentFileId;
+    @Column(name = "parent_file_id")
+    private Long parentFileId;
 
-	@Column(name = "file_id", nullable = false) // 연관관계
-	private Long fileId;
+    @Column(name = "file_id", nullable = false) // 연관관계
+    private Long fileId;
 
-	@Builder
-	public PullRequest(String title, String message, Long writerId, Long fileId) {
-		this.title = title;
-		this.message = message;
-		this.writerId = writerId;
-		this.fileId = fileId;
-	}
+    @Builder
+    public PullRequest(String title, String message, Long writerId, Long fileId) {
+        this.title = title;
+        this.message = message;
+        this.writerId = writerId;
+        this.fileId = fileId;
+    }
 }

@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkspaceSummary {
-	private Long workspaceId;
-	private String workspaceName;
+    private Long workspaceId;
+    private String workspaceName;
 }

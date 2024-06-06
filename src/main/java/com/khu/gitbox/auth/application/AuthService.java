@@ -25,7 +25,7 @@ public class AuthService {
                 request.email(),
                 request.password()
         );
-		
+
         // 인증 및 Authentication 객체 생성
         Authentication authenticated = authenticationManager.authenticate(authentication);
 

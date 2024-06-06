@@ -1,11 +1,10 @@
 package com.khu.gitbox.domain.pullRequest.infrastructure;
 
-import java.util.Optional;
-
+import com.khu.gitbox.domain.pullRequest.entity.PullRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.khu.gitbox.domain.pullRequest.entity.PullRequest;
+import java.util.Optional;
 
 public interface PullRequestRepository extends JpaRepository<PullRequest, Long> {
-	Optional<PullRequest> findByFileId(Long fileId);
+    Optional<PullRequest> findByFileId(Long fileId);
 }

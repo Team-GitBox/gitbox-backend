@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PullRequestCommentCreateRequest {
-	@NotBlank
-	private String comment;
-	@NotNull
-	private Boolean isApproved;
+    @NotBlank
+    private String comment;
+    @NotNull
+    private Boolean isApproved;
 }
