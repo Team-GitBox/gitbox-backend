@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface PullRequestCommentRepository extends JpaRepository<PullRequestComment, Long> {
+    boolean existsByPullRequestIdAndReviewerId(Long pullRequestId, Long reviewerId);
 
     List<PullRequestComment> findAllByPullRequestId(Long pullRequestId);
 }

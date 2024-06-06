@@ -58,14 +58,15 @@ public class PullRequestService {
         if (file.getWriterId().equals(reviewerId)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "본인이 작성한 파일에 대한 pull-request는 승인할 수 없습니다.");
         }
-
+        if (pullRequestCommentRepository.existsByPullRequestIdAndReviewerId(pullRequestId, reviewerId)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 리뷰를 완료했습니다.");
+        }
         PullRequestComment pullRequestComment = new PullRequestComment(
                 request.getComment(),
                 request.getIsApproved(),
                 reviewerId,
                 pullRequest.getId()
         );
-
         pullRequestCommentRepository.save(pullRequestComment);
 
         List<PullRequestComment> comments = pullRequestCommentRepository.findAllByPullRequestId(pullRequest.getId());
