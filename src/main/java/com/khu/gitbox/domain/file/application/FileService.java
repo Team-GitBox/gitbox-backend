@@ -101,7 +101,7 @@ public class FileService {
                 .url(s3Service.uploadFile(multipartFile))
                 .version(parentFile.getVersion() + 1)
                 .isLatest(false) // PR 승인 시 true로 변경되어야 함
-                .writerId(1L)
+                .writerId(member.getId())
                 .workspaceId(parentFile.getWorkspaceId())
                 .folderId(parentFile.getFolderId())
                 .rootFileId(parentFile.getRootFileId())

@@ -55,7 +55,7 @@ public class PullRequestService {
         PullRequest pullRequest = pullRequestRepository.findById(pullRequestId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "해당 pull-request를 찾을 수 없습니다."));
         File file = fileService.findFileById(pullRequest.getFileId());
-        if (file.getWriterId().equals(reviewerId)) {
+        if (pullRequest.getWriterId().equals(reviewerId)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "본인이 작성한 파일에 대한 pull-request는 승인할 수 없습니다.");
         }
         if (pullRequestCommentRepository.existsByPullRequestIdAndReviewerId(pullRequestId, reviewerId)) {
