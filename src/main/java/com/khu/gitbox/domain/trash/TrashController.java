@@ -23,15 +23,19 @@ public class TrashController {
 
     @DeleteMapping("/{fileId}")
     @Operation(summary = "파일 삭제하기")
-    public ApiResponse<Void> deleteFile(@PathVariable("fileId") Long fileId) {
-        trashService.deleteFile(fileId);
+    public ApiResponse<Void> deleteFile(
+            @PathVariable("fileId") Long fileId,
+            @PathVariable("workspaceId") Long workspaceId) {
+        trashService.deleteFile(fileId, workspaceId);
         return ApiResponse.ok();
     }
 
     @PostMapping("/{fileId}")
     @Operation(summary = "파일 복구하기")
-    public ApiResponse<Void> restoreFile(@PathVariable("fileId") Long fileId) {
-        trashService.restoreFile(fileId);
+    public ApiResponse<Void> restoreFile(
+            @PathVariable("fileId") Long fileId,
+            @PathVariable("workspaceId") Long workspaceId) {
+        trashService.restoreFile(fileId, workspaceId);
         return ApiResponse.ok();
     }
 }
