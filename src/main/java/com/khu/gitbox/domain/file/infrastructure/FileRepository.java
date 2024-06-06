@@ -3,6 +3,7 @@ package com.khu.gitbox.domain.file.infrastructure;
 import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileTag;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
     @Query("SELECT f FROM File f WHERE f.workspaceId = :workspaceId AND f.name LIKE %:keyword% AND f.isDeleted = FALSE ORDER BY f.name ASC")
     List<File> findAllByKeyword(Long workspaceId, String keyword);
 
+    @Modifying
     @Query("DELETE FROM File f WHERE f.rootFileId = :rootFileId AND f.isDeleted = TRUE")
     void deleteByRootFileId(Long rootFileId);
 
