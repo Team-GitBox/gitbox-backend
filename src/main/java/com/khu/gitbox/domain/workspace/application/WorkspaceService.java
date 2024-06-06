@@ -50,14 +50,15 @@ public class WorkspaceService {
 			.build();
 		Long workspaceId = workspaceRepository.save(workspace).getId();
 
-		// 멤버 이메일 리스트를 순회하며 멤버 엔티티 생성 및 추가
-		saveWorkspaceMembers(workspaceId, request.getMemberEmails());
-
+		// 워크스페이스 소유자 추가
 		WorkspaceMember workspaceMember = WorkspaceMember.builder()
 			.memberId(ownerId)
 			.workspaceId(workspaceId)
 			.build();
 		workspaceMemberRepository.save(workspaceMember);
+
+		// 멤버 이메일 리스트를 순회하며 멤버 엔티티 생성 및 추가
+		saveWorkspaceMembers(workspaceId, request.getMemberEmails());
 
 		Folder rootFolder = Folder.builder()
 			.name(DEFAULT_ROOT_FOLDER_NAME)
@@ -160,23 +161,21 @@ public class WorkspaceService {
 		for (String email : memberEmails) {
 			// 이메일로 멤버 찾기
 			Member member = memberRepository.findByEmail(email)
-				.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "이메일을 잘못 입력하셨습니다."));
+				.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 멤버입니다. : " + email));
 
 			// 이미 워크스페이스 멤버인지 확인
-			if (workspaceMemberRepository.findByWorkspaceIdAndMemberId(workspaceId, member.getId()).isPresent()) {
-				throw new CustomException(HttpStatus.BAD_REQUEST, "이미 워크스페이스 멤버입니다.");
+			if (workspaceMemberRepository.findByWorkspaceIdAndMemberId(workspaceId, member.getId()).isEmpty()) {
+				// WorkspaceMember 객체 생성
+				WorkspaceMember workspaceMember = WorkspaceMember.builder()
+					.memberId(member.getId())
+					.workspaceId(workspaceId)
+					.build();
+				// WorkspaceMember 저장
+				workspaceMemberRepository.save(workspaceMember);
+
+				// 멤버 ID 리스트에 추가
+				returnMemberIds.add(member.getId());
 			}
-
-			// WorkspaceMember 객체 생성
-			WorkspaceMember workspaceMember = WorkspaceMember.builder()
-				.memberId(member.getId())
-				.workspaceId(workspaceId)
-				.build();
-			// WorkspaceMember 저장
-			workspaceMemberRepository.save(workspaceMember);
-
-			// 멤버 ID 리스트에 추가
-			returnMemberIds.add(member.getId());
 		}
 		return returnMemberIds;
 	}

@@ -8,10 +8,7 @@ import com.khu.gitbox.domain.file.entity.FileStatus;
 import com.khu.gitbox.domain.file.entity.FileType;
 import com.khu.gitbox.domain.file.entity.Folder;
 import com.khu.gitbox.domain.file.infrastructure.FileRepository;
-import com.khu.gitbox.domain.file.presentation.dto.FileGetRequest;
-import com.khu.gitbox.domain.file.presentation.dto.request.FileCreateRequest;
-import com.khu.gitbox.domain.file.presentation.dto.request.FileUpdateRequest;
-import com.khu.gitbox.domain.file.presentation.dto.request.PullRequestCreateRequest;
+import com.khu.gitbox.domain.file.presentation.dto.request.*;
 import com.khu.gitbox.domain.file.presentation.dto.response.FileGetResponse;
 import com.khu.gitbox.domain.member.application.MemberService;
 import com.khu.gitbox.domain.member.entity.Member;
@@ -19,6 +16,8 @@ import com.khu.gitbox.domain.pullRequest.entity.PullRequest;
 import com.khu.gitbox.domain.pullRequest.infrastructure.PullRequestRepository;
 import com.khu.gitbox.domain.workspace.application.WorkspaceService;
 import com.khu.gitbox.domain.workspace.entity.Workspace;
+import com.khu.gitbox.domain.workspace.entity.WorkspaceMember;
+import com.khu.gitbox.domain.workspace.infrastructure.WorkspaceMemberRepository;
 import com.khu.gitbox.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +35,7 @@ import static com.khu.gitbox.util.SecurityContextUtil.getCurrentMemberId;
 @Transactional
 @RequiredArgsConstructor
 public class FileService {
+
     private final FileRepository fileRepository;
     private final PullRequestRepository pullRequestRepository;
     private final MemberService memberService;
@@ -43,6 +43,7 @@ public class FileService {
     private final FolderService folderService;
     private final ActionHistoryService actionHistoryService;
     private final S3Service s3Service;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
 
     // 파일 업로드
     public FileGetResponse uploadFile(FileCreateRequest request, MultipartFile multipartFile) {
@@ -76,6 +77,7 @@ public class FileService {
         return FileGetResponse.of(fileRepository.save(savedFile));
     }
 
+
     // 새로운 버전 파일 업로드 & PR 생성
     public FileGetResponse uploadNewVersionFile(
             Long parentFileId,
@@ -84,7 +86,8 @@ public class FileService {
         // 부모 파일 정보 가져오기
         final Member member = memberService.findMemberById(getCurrentMemberId());
         final File parentFile = findFileById(parentFileId);
-
+        final List<WorkspaceMember> workspaceMembers = workspaceMemberRepository.findByWorkspaceId(
+                parentFile.getWorkspaceId());
         // 부모 파일 업데이트 가능 여부 확인
         validateParentFileForUpdate(parentFileId, parentFile);
 
@@ -108,6 +111,23 @@ public class FileService {
                 .build();
         final File savedFile = fileRepository.save(newVersionFile);
 
+        if (workspaceMembers.size() > 1) {
+            // PR 생성 (PR 승인 시 부모 파일을 구버전으로)
+            createPullRequest(request, member, savedFile);
+        } else {
+            // PR 승인
+            savedFile.approve(parentFile);
+        }
+
+        // 워크스페이스 용량 업데이트
+        final Workspace workspace = workspaceService.findWorkspaceById(parentFile.getWorkspaceId());
+        workspace.increaseUsedStorage(savedFile.getSize());
+
+        actionHistoryService.createActionHistory(workspace.getId(), member, savedFile, Action.PULL_REQUEST);
+        return FileGetResponse.of(savedFile);
+    }
+
+    private void createPullRequest(PullRequestCreateRequest request, Member member, File savedFile) {
         // PR 생성
         final PullRequest pullRequest = PullRequest.builder()
                 .title(request.pullRequestTitle())
@@ -119,13 +139,6 @@ public class FileService {
 
         // 파일 PR ID 설정
         savedFile.updatePullRequestId(pullRequest.getId());
-
-        // 워크스페이스 용량 업데이트
-        final Workspace workspace = workspaceService.findWorkspaceById(parentFile.getWorkspaceId());
-        workspace.increaseUsedStorage(savedFile.getSize());
-
-        actionHistoryService.createActionHistory(workspace.getId(), member, savedFile, Action.PULL_REQUEST);
-        return FileGetResponse.of(savedFile);
     }
 
     // 파일 조회
@@ -198,8 +211,15 @@ public class FileService {
                 });
     }
 
-    public List<FileGetResponse> getFilesByTag(FileGetRequest request) {
+    public List<FileGetResponse> getFilesByTag(FileGetByTagRequest request) {
         return fileRepository.findAllByTag(request.workspaceId(), request.tag())
+                .stream()
+                .map(FileGetResponse::of)
+                .toList();
+    }
+
+    public List<FileGetResponse> getFilesByKeyword(FileGetByKeywordRequest request) {
+        return fileRepository.findAllByKeyword(request.workspaceId(), request.keyword())
                 .stream()
                 .map(FileGetResponse::of)
                 .toList();

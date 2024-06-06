@@ -2,6 +2,7 @@ package com.khu.gitbox.domain.file.infrastructure;
 
 import com.khu.gitbox.domain.file.entity.File;
 import com.khu.gitbox.domain.file.entity.FileTag;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -29,14 +30,17 @@ public interface FileRepository extends JpaRepository<File, Long> {
     @Query("SELECT f FROM File f WHERE f.folderId = :folderId AND f.name = :name AND f.isDeleted = FALSE")
     Optional<File> findByFolderIdAndName(Long folderId, String name);
 
-
-    //휴지통에 버린 팡리 목록 조회
+    //휴지통에 버린 파일 목록 조회
     @Query("SELECT f FROM File f WHERE f.workspaceId = :workspaceId AND f.isDeleted = TRUE ORDER BY f.name ASC")
     List<File> findAllByWorkspaceIdTrash(Long workspaceId);
+
+    @Query("SELECT f FROM File f WHERE f.workspaceId = :workspaceId AND f.name LIKE %:keyword% AND f.isDeleted = FALSE ORDER BY f.name ASC")
+    List<File> findAllByKeyword(Long workspaceId, @Param("keyword") String keyword);
 
     @Query("DELETE FROM File f WHERE f.rootFileId = :id AND f.isDeleted = TRUE")
     void deleteByRootFileId(Long rootFileId);
 
     @Query("SELECT f FROM File f WHERE f.rootFileId = :rootFileId AND f.isDeleted = TRUE ORDER BY f.version DESC")
     List<File> findAllByRootFileIdTrash(Long rootFileId);
+
 }

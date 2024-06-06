@@ -15,6 +15,7 @@ public class TrashController {
     private final TrashService trashService;
 
     @GetMapping("")
+    @Operation(summary = "휴지통 파일 목록 조회")
     public ApiResponse<List<TrashFileResponse>> showTrashFiles(
             @PathVariable("workspaceId") Long workspaceId) {
         List<TrashFileResponse> fileList = trashService.showTrashFiles(workspaceId);
