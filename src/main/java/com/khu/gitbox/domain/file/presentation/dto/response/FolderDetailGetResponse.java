@@ -1,8 +1,8 @@
 package com.khu.gitbox.domain.file.presentation.dto.response;
 
 import com.khu.gitbox.domain.file.entity.Folder;
+import com.khu.gitbox.util.DateTimeUtil;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public record FolderDetailGetResponse(
@@ -10,8 +10,8 @@ public record FolderDetailGetResponse(
         String name,
         Long parentFolderId,
         Long workspaceId,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
+        String createdAt,
+        String updatedAt,
         List<FolderSummaryGetResponse> folders,
         List<FileGetResponse> files
 ) {
@@ -19,13 +19,15 @@ public record FolderDetailGetResponse(
             Folder folder,
             List<FolderSummaryGetResponse> folders,
             List<FileGetResponse> files) {
+        String createdAt = DateTimeUtil.formatLocalDateTime(folder.getCreatedAt());
+        String updatedAt = DateTimeUtil.formatLocalDateTime(folder.getUpdatedAt());
         return new FolderDetailGetResponse(
                 folder.getId(),
                 folder.getName(),
                 folder.getParentFolderId(),
                 folder.getWorkspaceId(),
-                folder.getCreatedAt(),
-                folder.getUpdatedAt(),
+                createdAt,
+                updatedAt,
                 folders,
                 files
         );

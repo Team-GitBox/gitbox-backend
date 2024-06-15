@@ -24,7 +24,7 @@ public class File extends BaseEntity {
     @Column(name = "size", nullable = false)
     private Long size;
 
-    @Column(name = "url", nullable = false)
+    @Column(name = "url", nullable = false, length = 2048)
     private String url;
 
     @Enumerated(EnumType.STRING)
