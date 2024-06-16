@@ -23,7 +23,7 @@ public class TrashController {
     }
 
     @DeleteMapping("/{fileId}")
-    @Operation(summary = "파일 삭제하기")
+    @Operation(summary = "휴지통 파일 삭제하기")
     public ApiResponse<Void> deleteFile(
             @PathVariable("fileId") Long fileId,
             @PathVariable("workspaceId") Long workspaceId) {
@@ -32,7 +32,7 @@ public class TrashController {
     }
 
     @PostMapping("/{fileId}")
-    @Operation(summary = "파일 복구하기")
+    @Operation(summary = "휴지통 파일 복구하기")
     public ApiResponse<Void> restoreFile(
             @PathVariable("fileId") Long fileId,
             @PathVariable("workspaceId") Long workspaceId) {

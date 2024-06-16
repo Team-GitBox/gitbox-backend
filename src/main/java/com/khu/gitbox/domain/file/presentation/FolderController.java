@@ -5,6 +5,7 @@ import com.khu.gitbox.domain.file.application.FolderService;
 import com.khu.gitbox.domain.file.presentation.dto.request.FolderCreateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.request.FolderUpdateRequest;
 import com.khu.gitbox.domain.file.presentation.dto.response.FolderDetailGetResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class FolderController {
 
     private final FolderService folderService;
 
+    @Operation(summary = "폴더 생성")
     @PostMapping
     public ApiResponse<Long> createFolder(
             @PathVariable Long workspaceId,
@@ -24,6 +26,7 @@ public class FolderController {
         return ApiResponse.ok(folderId);
     }
 
+    @Operation(summary = "폴더 상세 조회")
     @GetMapping("/{folderId}")
     public ApiResponse<FolderDetailGetResponse> getFolder(
             @PathVariable Long workspaceId,
@@ -32,6 +35,7 @@ public class FolderController {
         return ApiResponse.ok(folder);
     }
 
+    @Operation(summary = "폴더 수정")
     @PatchMapping("/{folderId}")
     public ApiResponse<FolderDetailGetResponse> updateFolder(
             @PathVariable Long workspaceId,
@@ -41,6 +45,7 @@ public class FolderController {
         return ApiResponse.ok(folder);
     }
 
+    @Operation(summary = "폴더 삭제")
     @DeleteMapping("/{folderId}")
     public ApiResponse<Void> deleteFolder(
             @PathVariable Long workspaceId,
