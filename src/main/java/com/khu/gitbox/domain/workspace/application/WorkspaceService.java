@@ -26,7 +26,7 @@ import java.util.Map;
 @Transactional
 @RequiredArgsConstructor
 public class WorkspaceService {
-    private static final Long DEFAULT_MAX_STORAGE = 1000 * 1000 * 1000L; // 1GB
+    private static final Long DEFAULT_MAX_STORAGE = 10 * 1000 * 1000 * 1000L; // 10GB
     private static final String DEFAULT_ROOT_FOLDER_NAME = "home"; // 루트 폴더 이름
 
     private final MemberRepository memberRepository;
